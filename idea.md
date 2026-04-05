@@ -138,7 +138,24 @@ Build the project as a **Community Need Intelligence Grid** with three mandatory
 
 This creates a strong balance of novelty, real social value, and credible scale story.
 
-## 12) Research References (Primary)
+## 12) What Was Actually Delivered
+
+The project shipped as **Sahaya** — a Community Need Intelligence Grid built on the recommended integrated scope (Section 6). Key deliverables mapped to the solution universe:
+
+- **A. Signal Collection**: Multi-channel intake (web form with templates, CSV batch, SMS via Twilio). AI-powered entity deduplication.
+- **B. Need Intelligence**: Severity-vulnerability-freshness priority scoring with decoupled confidence. Bias audit panel with disparity analysis. Vulnerability >= 9 auto-flagging. PostGIS geocoded hotspot map.
+- **C. Volunteer Intelligence**: Skill/language/distance matching via AI agent. Two-dimensional status (staffing + action). Self-service case discovery portal.
+- **D. Allocation and Dispatch**: Data-driven dispatch rules (SLA tiers by severity). Auto-escalation for critical cases. Incident/campaign grouping. Itinerary/route planning with nearest-neighbor routing.
+- **E. Multi-Org Coordination**: Incident-level grouping across cases. Shared dashboard with active incident tracking.
+- **F. Trust and Governance**: Full audit trail. Case activity timeline with auto-logged notes at every status transition. Closure verification with proof notes. Google OAuth authentication.
+
+Tech stack: Next.js 16, Supabase (PostgreSQL + PostGIS), Vercel AI SDK (3 ToolLoopAgent agents), OpenAI GPT-5.4-mini, React Leaflet, shadcn/ui.
+
+13 tables, 24 API endpoints, 9 SQL migrations, 11 pages.
+
+---
+
+## 13) Research References (Primary)
 - Google Solution Challenge terms and judging context: https://developers.google.com/community/gdsc-solution-challenge/terms
 - OCHA State of Open Humanitarian Data 2025: https://centre.humdata.org/the-state-of-open-humanitarian-data-2025/
 - OCHA revised Data Responsibility Guidelines (2025): https://centre.humdata.org/revised-ocha-data-responsibility-guidelines/

@@ -8,8 +8,18 @@ export async function POST(request: NextRequest) {
 
   try {
     if (action === "escalate") {
+      const supabaseForLookup = createServerClient();
+      const { data: assessment } = await supabaseForLookup
+        .from("assessments")
+        .select("severity")
+        .eq("case_id", caseId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      const severity = assessment?.severity ?? 5;
+
       const result = await dispatchAgent.generate({
-        prompt: `Escalate case ${caseId}. Reason: ${matchRationale || "No suitable volunteer available"}. Follow escalation process.`,
+        prompt: `Escalate case ${caseId} (severity ${severity}/10). Reason: ${matchRationale || "No suitable volunteer available"}. Follow escalation process.`,
       });
 
       const supabase = createServerClient();
@@ -30,8 +40,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const supabaseForLookup = createServerClient();
+    const { data: assessment } = await supabaseForLookup
+      .from("assessments")
+      .select("severity")
+      .eq("case_id", caseId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    const severity = assessment?.severity ?? 5;
+
     const result = await dispatchAgent.generate({
-      prompt: `Assign volunteer ${volunteerId} to case ${caseId}. Match rationale: "${matchRationale || "Coordinator approved"}". Match score: ${matchScore ?? 0.8}. Follow assignment process.`,
+      prompt: `Assign volunteer ${volunteerId} to case ${caseId}. The case severity is ${severity}/10 — call getDispatchRules with severity ${severity} to determine the correct SLA. Match rationale: "${matchRationale || "Coordinator approved"}". Match score: ${matchScore ?? 0.8}. Follow assignment process.`,
     });
 
     const supabase = createServerClient();

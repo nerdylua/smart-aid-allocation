@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sahaya — Community Need Intelligence Grid
 
-## Getting Started
+A unified decision layer that ingests scattered need signals, prioritizes by severity and vulnerability, then routes requests to best-fit volunteers with closure tracking and equity monitoring.
 
-First, run the development server:
+## Stack
+
+- **Framework**: Next.js 16 (App Router + API Routes)
+- **Database**: Supabase (PostgreSQL + PostGIS)
+- **AI**: Vercel AI SDK (ToolLoopAgent) + OpenAI GPT-5.4-mini
+- **Maps**: React Leaflet + OpenStreetMap + Nominatim geocoding
+- **Auth**: Google OAuth via Supabase Auth
+- **UI**: Tailwind CSS + shadcn/ui
+
+## Setup
+
+```bash
+npm install
+cp .env.local.example .env.local
+# Fill in Supabase, OpenAI, and (optionally) Google OAuth + Twilio credentials
+```
+
+Run all migrations in `supabase/migrations/` (001–009) against your Supabase project, then seed:
+
+```bash
+npx tsx scripts/seed.ts
+```
+
+Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | Yes | Supabase anon/publishable key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server-side only) |
+| `OPENAI_API_KEY` | Yes | OpenAI API key for AI agents |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | No | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | No | Google OAuth client secret |
+| `TWILIO_ACCOUNT_SID` | No | Twilio account SID (SMS intake) |
+| `TWILIO_AUTH_TOKEN` | No | Twilio auth token |
+| `TWILIO_PHONE_NUMBER` | No | Twilio phone number |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Core Pipeline
 
-## Learn More
+```
+intake (form / CSV / SMS) → geocode → AI triage → AI match → dispatch (SLA rules) → accept → complete → verify → close
+```
 
-To learn more about Next.js, take a look at the following resources:
+Every step is audited, logged to the case timeline, and visible in the realtime dashboard.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **3 AI agents**: Triage (scoring + flagging), Matching (skill/language/distance), Dispatch (SLA-aware assignment + auto-escalation)
+- **Bias audit panel**: Disparity analysis by region, language, and need type
+- **SMS intake**: Twilio webhook auto-creates cases and triggers AI triage
+- **Real geocoding**: Nominatim + PostGIS for map pins from any location
+- **Incident grouping**: Bundle related cases under campaigns with progress tracking
+- **Volunteer self-service**: Browse and claim cases matching your skills
+- **Route planning**: Nearest-neighbor itineraries with distance estimates
+- **Configurable dispatch rules**: Data-driven SLA tiers and auto-escalation policy
+- **Supabase Realtime**: Dashboard and case detail auto-refresh on changes
 
-## Deploy on Vercel
+## UN SDG Alignment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- SDG 1 (No Poverty) — routing aid to most vulnerable
+- SDG 3 (Good Health) — medical need prioritization
+- SDG 10 (Reduced Inequalities) — bias audit + vulnerability-aware scoring
+- SDG 11 (Sustainable Cities) — hotspot detection for urban response
+- SDG 17 (Partnerships) — multi-org design with incident grouping
