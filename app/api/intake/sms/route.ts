@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { geocode } from "@/lib/geocode";
+import { triageAgent } from "@/lib/agents/triage";
 
 export async function POST(request: NextRequest) {
   const supabase = createServerClient();
@@ -86,6 +87,14 @@ export async function POST(request: NextRequest) {
       note_type: "system",
       author_name: "SMS Intake",
     });
+
+    triageAgent
+      .generate({
+        prompt: `Please assess case ${caseData.id}. This case was created from an SMS message.`,
+      })
+      .catch((err) => {
+        console.error("Triage agent failed for SMS case:", err);
+      });
 
     const twiml = `<Response><Message>Thank you, your need has been registered. Case ID: ${caseData.id.slice(0, 8)}</Message></Response>`;
     return new NextResponse(twiml, {

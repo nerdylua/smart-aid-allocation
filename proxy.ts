@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 // Public routes that don't require auth
 const publicPaths = ["/login", "/api/intake/sms"];
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths

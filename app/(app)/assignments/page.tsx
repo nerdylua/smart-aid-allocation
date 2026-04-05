@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRealtimeRefresh } from "@/hooks/use-realtime";
 
 interface Assignment {
   id: string;
@@ -17,6 +18,8 @@ interface Assignment {
 export default function AssignmentsPage() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useRealtimeRefresh(["assignments", "cases"]);
 
   useEffect(() => {
     fetchAssignments();

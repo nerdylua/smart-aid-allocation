@@ -110,8 +110,8 @@ async function seed() {
   console.log(`  ✓ ${orgs.length} organizations`);
 
   // 2. Insert users with locations
-  const staffingOptions = ["available", "available", "available", "on_shift", "on_shift", "delayed", "committed", "unavailable"] as const;
-  const actionOptions = ["idle", "idle", "idle", "idle", "responding", "on_scene", "returning"] as const;
+  const staffingOptions: Array<"available" | "on_shift" | "delayed" | "committed" | "unavailable"> = ["available", "available", "available", "on_shift", "on_shift", "delayed", "committed", "unavailable"];
+  const actionOptions: Array<"idle" | "responding" | "on_scene" | "returning"> = ["idle", "idle", "idle", "idle", "responding", "on_scene", "returning"];
 
   const userInserts = users.map((u) => ({
     name: u.name,
