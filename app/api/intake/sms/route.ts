@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { geocode } from "@/lib/geocode";
 import { triageAgent } from "@/lib/agents/triage";
+import { getAuthenticatedUser } from "@/lib/supabase/api-auth";
 
 export async function POST(request: NextRequest) {
+  const user = await getAuthenticatedUser(request);
+  if (!user) {
+    return new NextResponse("<Response><Message>Unauthorized</Message></Response>", {
+      status: 401,
+      headers: { "Content-Type": "text/xml" },
+    });
+  }
+
   const supabase = createServerClient();
 
   // Twilio sends form-urlencoded

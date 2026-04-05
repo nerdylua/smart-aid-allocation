@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dispatchAgent } from "@/lib/agents/dispatch";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAuthenticatedUser } from "@/lib/supabase/api-auth";
 
 export async function POST(request: NextRequest) {
+  const user = await getAuthenticatedUser(request);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { caseId, volunteerId, matchRationale, matchScore, action } =
     await request.json();
 
