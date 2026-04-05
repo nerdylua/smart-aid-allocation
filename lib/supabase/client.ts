@@ -1,9 +1,14 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient as createSSRBrowserClient } from "@supabase/ssr";
 
-// Browser client (uses publishable key, respects RLS)
+let client: ReturnType<typeof createSSRBrowserClient> | null = null;
+
+// Browser client singleton (cookie-based auth via @supabase/ssr)
 export function createBrowserClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
-  );
+  if (!client) {
+    client = createSSRBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+    );
+  }
+  return client;
 }

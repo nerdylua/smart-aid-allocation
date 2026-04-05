@@ -4,13 +4,14 @@ export async function signInWithGoogle() {
   const supabase = createBrowserClient();
   return supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${window.location.origin}/dashboard` },
+    options: { redirectTo: `${window.location.origin}/auth/callback` },
   });
 }
 
 export async function signOut() {
   const supabase = createBrowserClient();
-  return supabase.auth.signOut();
+  await supabase.auth.signOut();
+  window.location.replace("/login");
 }
 
 export async function getSession() {

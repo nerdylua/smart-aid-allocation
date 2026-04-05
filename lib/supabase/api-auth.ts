@@ -1,16 +1,23 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import type { User } from "@supabase/supabase-js";
 
 export async function getAuthenticatedUser(
   request: NextRequest
 ): Promise<User | null> {
-  const cookieHeader = request.headers.get("cookie") ?? "";
-
-  const supabase = createClient(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-    { global: { headers: { Cookie: cookieHeader } } }
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll() {
+          // API routes don't need to refresh cookies
+        },
+      },
+    }
   );
 
   const {
