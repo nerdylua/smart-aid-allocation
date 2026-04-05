@@ -20,9 +20,9 @@ export async function middleware(request: NextRequest) {
 
   // Check for Supabase auth token in cookie
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || !supabasePublishableKey) {
     // If Supabase not configured, allow all (dev mode)
     return NextResponse.next();
   }
@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
 
     // Try to verify session via Supabase
     try {
-      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      const supabase = createClient(supabaseUrl, supabasePublishableKey);
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         return NextResponse.redirect(new URL("/login", request.url));

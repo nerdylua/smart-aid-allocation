@@ -8,7 +8,7 @@
 ## Project Context
 
 - **Stack**: Next.js 16 (App Router), Supabase (PostgreSQL + PostGIS), Vercel AI SDK 6, OpenAI GPT-5.4-mini, React Leaflet 5, shadcn/ui, TypeScript
-- **DB Client**: `lib/supabase/server.ts` (service role, bypasses RLS), `lib/supabase/client.ts` (anon key, browser)
+- **DB Client**: `lib/supabase/server.ts` (service role, bypasses RLS), `lib/supabase/client.ts` (publishable key, browser)
 - **Types**: `lib/supabase/types.ts` (manual interfaces matching `supabase/migrations/001_initial_schema.sql`)
 - **Agents**: `lib/agents/triage.ts`, `lib/agents/matching.ts`, `lib/agents/dispatch.ts` — each uses `ToolLoopAgent` with `tool()` definitions
 - **Current schema**: 8 tables — organizations, users, cases, assessments, assignments, verifications, feedback, audit_events
@@ -199,7 +199,7 @@ The dashboard fetches data on page load but never updates. A coordinator doesn't
 4. **Supabase config**: Realtime must be enabled on the tables in Supabase dashboard (Project Settings → Database → Replication). Add a note in the README or `.env.local.example`.
 
 ### Important notes
-- Supabase Realtime uses the **anon key** (browser client), not the service role key
+- Supabase Realtime uses the **publishable key** (browser client), not the service role key
 - The `@supabase/supabase-js` v2.100.1 already includes realtime support
 - Keep subscriptions in client components only (not server components)
 

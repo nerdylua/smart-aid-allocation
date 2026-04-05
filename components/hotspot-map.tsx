@@ -40,11 +40,45 @@ const locationCoordsFallback: Record<string, [number, number]> = {
 };
 
 function parseLocation(loc: unknown): { lat: number; lng: number } | null {
-  if (!loc || typeof loc !== "object") return null;
-  const geo = loc as { type?: string; coordinates?: number[] };
-  if (geo.type === "Point" && Array.isArray(geo.coordinates) && geo.coordinates.length >= 2) {
-    return { lat: geo.coordinates[1], lng: geo.coordinates[0] };
+  if (!loc) return null;
+
+  // GeoJSON format: { type: "Point", coordinates: [lng, lat] }
+  if (typeof loc === "object") {
+    const geo = loc as { type?: string; coordinates?: number[] };
+    if (geo.type === "Point" && Array.isArray(geo.coordinates) && geo.coordinates.length >= 2) {
+      return { lat: geo.coordinates[1], lng: geo.coordinates[0] };
+    }
   }
+
+  // WKB hex format from PostGIS (e.g. "0101000020E6100000..." )
+  if (typeof loc === "string" && /^[0-9a-fA-F]+$/.test(loc) && loc.length >= 42) {
+    try {
+      // EWKB Point with SRID: 01 01000020 E6100000 <X:16hex> <Y:16hex>
+      // Standard WKB Point:    01 01000000 <X:16hex> <Y:16hex>
+      let offset = 2; // skip byte order
+      const typeHex = loc.slice(offset, offset + 8);
+      offset += 8;
+      // Check for SRID flag (0x20 in type)
+      const typeInt = parseInt(typeHex.match(/../g)!.reverse().join(""), 16);
+      if (typeInt & 0x20000000) offset += 8; // skip SRID (4 bytes)
+      const xHex = loc.slice(offset, offset + 16);
+      const yHex = loc.slice(offset + 16, offset + 32);
+      const buf = new ArrayBuffer(8);
+      const view = new DataView(buf);
+      // Parse X (longitude)
+      for (let i = 0; i < 8; i++) view.setUint8(i, parseInt(xHex.slice(i * 2, i * 2 + 2), 16));
+      const lng = view.getFloat64(0, true); // little-endian
+      // Parse Y (latitude)
+      for (let i = 0; i < 8; i++) view.setUint8(i, parseInt(yHex.slice(i * 2, i * 2 + 2), 16));
+      const lat = view.getFloat64(0, true);
+      if (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+        return { lat, lng };
+      }
+    } catch {
+      // fall through to null
+    }
+  }
+
   return null;
 }
 

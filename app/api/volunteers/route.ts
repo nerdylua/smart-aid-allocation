@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("users")
-    .select("id, name, email, language, skills, location, availability, org_id")
+    .select("id, name, email, language, skills, location, availability, org_id, staffing, action, status_updated_at")
     .eq("role", "volunteer")
     .order("name");
 
