@@ -142,7 +142,7 @@ This creates a strong balance of novelty, real social value, and credible scale 
 
 The project shipped as **Sahaya** — a Community Need Intelligence Grid built on the recommended integrated scope (Section 6). Key deliverables mapped to the solution universe:
 
-- **A. Signal Collection**: Multi-channel intake (web form with templates, CSV batch, SMS via Twilio). AI-powered entity deduplication.
+- **A. Signal Collection**: Multi-channel intake (web form with templates, CSV batch, email via Resend). AI-powered entity deduplication.
 - **B. Need Intelligence**: Severity-vulnerability-freshness priority scoring with decoupled confidence. Bias audit panel with disparity analysis. Vulnerability >= 9 auto-flagging. PostGIS geocoded hotspot map.
 - **C. Volunteer Intelligence**: Skill/language/distance matching via AI agent. Two-dimensional status (staffing + action). Self-service case discovery portal.
 - **D. Allocation and Dispatch**: Data-driven dispatch rules (SLA tiers by severity). Auto-escalation for critical cases. Incident/campaign grouping. Itinerary/route planning with nearest-neighbor routing.

@@ -53,12 +53,12 @@ export default function MessagesPage() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Message Inbox</h2>
         <p className="text-muted-foreground">
-          SMS and multi-channel messages. {pending.length} pending review.
+          Email and multi-channel messages. {pending.length} pending review.
         </p>
       </div>
 
       {pending.length === 0 && processed.length === 0 && (
-        <p className="text-sm text-muted-foreground">No messages yet. Configure Twilio webhook to start receiving SMS.</p>
+        <p className="text-sm text-muted-foreground">No messages yet. Send an email to the intake endpoint to start receiving messages.</p>
       )}
 
       {pending.length > 0 && (

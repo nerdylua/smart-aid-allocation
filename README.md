@@ -16,7 +16,7 @@ A unified decision layer that ingests scattered need signals, prioritizes by sev
 ```bash
 npm install
 cp .env.local.example .env.local
-# Fill in Supabase, OpenAI, and (optionally) Google OAuth + Twilio credentials
+# Fill in Supabase, OpenAI, and (optionally) Google OAuth + Resend credentials
 ```
 
 Run all migrations in `supabase/migrations/` (001–009) against your Supabase project, then seed:
@@ -41,14 +41,13 @@ npm run dev
 | `OPENAI_API_KEY` | Yes | OpenAI API key for AI agents |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | No | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | No | Google OAuth client secret |
-| `TWILIO_ACCOUNT_SID` | No | Twilio account SID (SMS intake) |
-| `TWILIO_AUTH_TOKEN` | No | Twilio auth token |
-| `TWILIO_PHONE_NUMBER` | No | Twilio phone number |
+| `RESEND_API_KEY` | No | Resend API key (email intake + confirmations) |
+| `RESEND_FROM_EMAIL` | No | Sender address for confirmation emails |
 
 ## Core Pipeline
 
 ```
-intake (form / CSV / SMS) → geocode → AI triage → AI match → dispatch (SLA rules) → accept → complete → verify → close
+intake (form / CSV / email) → geocode → AI triage → AI match → dispatch (SLA rules) → accept → complete → verify → close
 ```
 
 Every step is audited, logged to the case timeline, and visible in the realtime dashboard.
@@ -57,7 +56,7 @@ Every step is audited, logged to the case timeline, and visible in the realtime 
 
 - **3 AI agents**: Triage (scoring + flagging), Matching (skill/language/distance), Dispatch (SLA-aware assignment + auto-escalation)
 - **Bias audit panel**: Disparity analysis by region, language, and need type
-- **SMS intake**: Twilio webhook auto-creates cases and triggers AI triage
+- **Email intake**: Resend-powered email intake auto-creates cases, triggers AI triage, and sends confirmation emails
 - **Real geocoding**: Nominatim + PostGIS for map pins from any location
 - **Incident grouping**: Bundle related cases under campaigns with progress tracking
 - **Volunteer self-service**: Browse and claim cases matching your skills

@@ -43,7 +43,7 @@ Deliver a working end-to-end system:
 ### ADR Log
 - `ADR-001` Architecture: Next.js monolith (API routes + frontend in one app).
 - `ADR-002` Decision mode: AI assistive, human-approved for critical actions. Severity 9-10 auto-escalates via dispatch rules.
-- `ADR-003` Data boundary: canonical case schema + channel adapters (form, CSV, SMS), HSDS-compatible.
+- `ADR-003` Data boundary: canonical case schema + channel adapters (form, CSV, email), HSDS-compatible.
 - `ADR-004` Reliability: Supabase Realtime for subscriptions, simple async for background work.
 - `ADR-005` Observability: audit_events table + case_notes timeline — every action logged.
 - `ADR-006` Agent framework: Vercel AI SDK (ToolLoopAgent + tool()) for triage, matching, dispatch.
@@ -68,7 +68,7 @@ Deliver a working end-to-end system:
 10. Multilingual support for at least 2 demo languages.
 
 ### Beyond MVP (delivered)
-1. SMS intake via Twilio webhook — auto-creates cases, triggers AI triage, returns TwiML.
+1. Email intake via Resend — auto-creates cases, triggers AI triage, sends confirmation email.
 2. Case activity timeline — chronological notes auto-logged on every status change.
 3. Volunteer status dimensions — staffing (available/on_shift/delayed/committed/unavailable) + action (idle/responding/on_scene/returning).
 4. Bias audit panel — disparity analysis by region, language, and need type.
@@ -91,7 +91,7 @@ Deliver a working end-to-end system:
 
 ## 4) User Personas and Core Journeys
 ### Field Worker
-1. Capture need via form (with quick templates) or SMS.
+1. Capture need via form (with quick templates) or email.
 2. Track case state updates (realtime).
 3. Add follow-up notes to the case timeline.
 4. Link cases to active incidents.
@@ -136,13 +136,13 @@ Next.js 16 App (Vercel)
 │   ├── /intake           — Field worker intake form with templates + incident linking
 │   ├── /assignments      — Volunteer assignment portal
 │   ├── /volunteers       — Volunteer list with staffing/action badges
-│   ├── /messages         — SMS message inbox (promote/dismiss)
+│   ├── /messages         — Email message inbox (promote/dismiss)
 │   ├── /incidents        — Incident list + detail with grouped cases
 │   ├── /volunteer-hub    — Self-service case finder for volunteers
 │   └── /itineraries      — Route planner with map visualization
 ├── /app/api (API routes — 24 endpoints)
 │   ├── /intakes          — POST intake (with geocoding), POST batch
-│   ├── /intake/sms       — POST Twilio webhook (auto-creates case + triggers triage)
+│   ├── /intake/email     — POST email intake (auto-creates case + triggers triage + Resend confirmation)
 │   ├── /cases            — GET list, GET detail, PATCH update
 │   ├── /cases/[id]/notes — GET/POST case activity notes
 │   ├── /cases/[id]/interest — POST volunteer self-selection
@@ -189,7 +189,7 @@ Next.js 16 App (Vercel)
 ```
 
 ### Data Flow
-1. Field worker submits intake (form/CSV/SMS) -> API route -> Supabase insert -> geocode location -> case created
+1. Field worker submits intake (form/CSV/email) -> API route -> Supabase insert -> geocode location -> case created
 2. API triggers Triage Agent -> scores case -> stores assessment -> auto-flags vulnerability >= 9 via DB trigger
 3. Coordinator reviews queue (realtime via Supabase subscriptions) + bias audit panel
 4. Coordinator requests match -> Matching Agent -> ranked volunteers (filtered by staffing=available/on_shift, action=idle)
@@ -209,7 +209,7 @@ id, name, type, settings (jsonb), created_at
 id, org_id (FK), role (enum: admin/coordinator/field_worker/volunteer), email, name, language, skills (text[]), location (geography point), availability (jsonb), **staffing** (enum: available/on_shift/delayed/committed/unavailable), **action** (enum: idle/responding/on_scene/returning), **status_updated_at**, created_at
 
 ### cases
-id, org_id (FK), source_channel (enum: form/csv/api/helpline/**sms**), title, description, location (geography point), location_label (text), needs (jsonb), person_info (jsonb), status (enum: new/triaged/matched/assigned/in_progress/completed/closed), language, created_by (FK users), **incident_id** (FK incidents nullable), created_at, updated_at
+id, org_id (FK), source_channel (enum: form/csv/api/helpline/sms/**email**), title, description, location (geography point), location_label (text), needs (jsonb), person_info (jsonb), status (enum: new/triaged/matched/assigned/in_progress/completed/closed), language, created_by (FK users), **incident_id** (FK incidents nullable), created_at, updated_at
 
 ### assessments
 id, case_id (FK), severity (1-10), vulnerability (1-10), confidence (0-1), freshness (0-1), **priority_score** (generated: severity*0.45 + vulnerability*0.35 + freshness*10*0.20), rationale (text), is_flagged (bool), flagged_reason (text), reviewed_by (FK users nullable), reviewed_at, created_at
@@ -290,7 +290,7 @@ Script generates realistic synthetic data:
 ### Layer 2: Multi-Channel Intake (live demo)
 - Manual form submission by field worker (with quick templates and incident linking)
 - CSV batch import from partner NGO spreadsheet
-- SMS intake via Twilio webhook (auto-geocodes, auto-triages)
+- Email intake via Resend (auto-geocodes, auto-triages, sends confirmation)
 
 ### Layer 3: Open Data Adapters (scale story for judges)
 - HDX Humanitarian API (population displacement, needs assessments)
@@ -306,7 +306,7 @@ Script generates realistic synthetic data:
 |--------|-------|---------|
 | POST | /api/intakes | Create single case intake (with auto-geocoding) |
 | POST | /api/intakes/batch | CSV batch import |
-| POST | /api/intake/sms | Twilio SMS webhook (auto-creates case + triggers triage) |
+| POST | /api/intake/email | Email intake via Resend (auto-creates case + triggers triage) |
 | GET | /api/cases | List cases (filtered by status, priority, org) |
 | GET | /api/cases/[id] | Case detail with assessments + assignments |
 | PATCH | /api/cases/[id] | Update case fields/status |
@@ -325,7 +325,7 @@ Script generates realistic synthetic data:
 | POST | /api/incidents | Create incident |
 | GET | /api/incidents/[id] | Incident detail with grouped cases |
 | PATCH | /api/incidents/[id] | Update incident status/target |
-| GET | /api/messages | List SMS messages |
+| GET | /api/messages | List email messages |
 | PATCH | /api/messages/[id] | Update message status (dismiss) |
 | POST | /api/messages/[id]/promote | Promote message to case |
 | GET | /api/itineraries | List itineraries for a volunteer |
@@ -354,7 +354,7 @@ Script generates realistic synthetic data:
 
 ### Story
 1. Open: Dashboard shows live backlog with hotspot map (geocoded pins), active incidents, bias audit panel.
-2. SMS Intake: A crisis SMS arrives — auto-creates case, auto-geocodes location, triggers AI triage.
+2. Email Intake: A crisis email arrives — auto-creates case, auto-geocodes location, triggers AI triage.
 3. AI Triage: System scores severity 8/10, vulnerability 9/10, flags for coordinator review. Rationale cites specific case details. Case note auto-logged.
 4. Duplicate check: AI checks nearby cases — "different household, not duplicate" (explains why).
 5. AI Match: Volunteers filtered by staffing=available, action=idle. Top candidate: speaks the language, has medical skills, 7km away.
@@ -369,7 +369,7 @@ Script generates realistic synthetic data:
 2. Explainable AI decisions with human-in-the-loop gates and configurable dispatch rules
 3. Closed-loop accountability: every decision audited, every status change timestamped
 4. Equity: bias audit panel quantifies disparity across regions, languages, and need types
-5. Multi-channel intake: web form, CSV batch, SMS — all feed the same intelligence pipeline
+5. Multi-channel intake: web form, CSV batch, email — all feed the same intelligence pipeline
 
 ---
 
@@ -389,7 +389,7 @@ Script generates realistic synthetic data:
 | UN SDG alignment (5pts) | 5 SDGs with clear feature mapping + bias audit directly addresses SDG 10 |
 | User feedback + iteration (5pts) | Document 3 feedback rounds with NGO patterns |
 | Impact + metrics (5pts) | Live KPI dashboard, bias disparity metrics, incident progress tracking |
-| Innovation | Confidence-decoupled priority, explainable AI, data-driven dispatch rules, bias audit panel, SMS-to-triage pipeline |
+| Innovation | Confidence-decoupled priority, explainable AI, data-driven dispatch rules, bias audit panel, email-to-triage pipeline |
 | Technical depth | 3 AI agents (ToolLoopAgent + tool calling), PostGIS geocoding, Supabase Realtime, 13-table schema with 9 migrations |
 | Scalability | Multi-org by design, configurable dispatch rules, incident grouping, multi-channel intake |
 
@@ -401,7 +401,7 @@ Script generates realistic synthetic data:
 3. Obvious seeded duplicates detected.
 4. Dashboard counts reconcile with audit events.
 5. Bias disparity ratios computed and visible for all demographic groups.
-6. SMS intake auto-creates cases and triggers triage within one request cycle.
+6. Email intake auto-creates cases and triggers triage within one request cycle.
 7. Every status transition produces an audit event and a case note.
 
 ---

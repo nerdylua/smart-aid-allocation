@@ -29,7 +29,7 @@ export async function POST(
     .insert({
       title,
       description: body,
-      source_channel: "sms",
+      source_channel: "email",
       language: "hi",
       status: "new",
     })
@@ -51,12 +51,12 @@ export async function POST(
     entity_type: "case",
     entity_id: caseData.id,
     action: "created",
-    metadata: { source_channel: "sms", sender, message_id: id },
+    metadata: { source_channel: "email", sender, message_id: id },
   });
 
   await supabase.from("case_notes").insert({
     case_id: caseData.id,
-    content: `Case promoted from SMS message from ${sender}`,
+    content: `Case promoted from email message from ${sender}`,
     note_type: "system",
     author_name: "Message Inbox",
   });
