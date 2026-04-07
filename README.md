@@ -1,4 +1,4 @@
-# Sahaya — Community Need Intelligence Grid
+# Sahaya: Community Need Intelligence Grid
 
 A unified decision layer that ingests scattered need signals, prioritizes by severity and vulnerability, then routes requests to best-fit volunteers with closure tracking and equity monitoring.
 

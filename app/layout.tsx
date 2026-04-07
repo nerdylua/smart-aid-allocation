@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sahaya — Community Need Intelligence",
+  title: "Sahaya",
   description:
     "A need-to-response intelligence layer for NGOs. Cross-channel intake, AI triage, volunteer matching, and closed-loop accountability.",
 };
