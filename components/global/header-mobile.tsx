@@ -21,12 +21,14 @@ export function NavigationMobile({ navigationLinks }: NavigationMobileProps) {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-      </SheetTrigger>
+      <SheetTrigger
+        render={
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        }
+      />
       <SheetContent side="right" className="w-full max-w-[300px] sm:w-[300px]">
         <nav className="flex flex-col gap-4">
           {navigationLinks.map((item) => (

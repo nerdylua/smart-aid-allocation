@@ -4,7 +4,7 @@ import { headerConfig } from '@/lib/config/header'
 import { Footer } from '@/components/revamp/footer'
 
 export const metadata: Metadata = {
-  title: 'Sahaya — Community Need Intelligence Grid',
+  title: 'Sahaya',
   description:
     'AI-powered platform for NGOs to triage, match, dispatch, and track community aid — from intake to verified closure, with equity built in.',
 }

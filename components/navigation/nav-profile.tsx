@@ -1,9 +1,8 @@
 "use client";
 
-import { LogOut, MoreHorizontal, Settings, User } from "lucide-react";
+import { Loader2, LogOut, MoreHorizontal, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,14 +17,21 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import Avatar from "@/components/supaauth/avatar";
-import { createSupabaseBrowser } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
+
+function Avatar() {
+  return (
+    <div className="size-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+      <User className="h-4 w-4" />
+    </div>
+  );
+}
 export function NavProfile({ user }: { user: any }) {
   const router = useRouter();
   const [isSignOut, startSignOut] = useTransition();
   const signout = () => {
     startSignOut(async () => {
-      const supabase = createSupabaseBrowser();
+      const supabase = createBrowserClient();
       await supabase.auth.signOut();
       router.push("/signin");
     });
@@ -34,24 +40,26 @@ export function NavProfile({ user }: { user: any }) {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className={cn(
-                "data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
-                {
-                  "animate-pulse": isSignOut,
-                },
-              )}
-            >
-              <Avatar />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.email}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
-              <MoreHorizontal className="ml-auto h-4 w-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton
+                size="lg"
+                className={cn(
+                  "data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+                  {
+                    "animate-pulse": isSignOut,
+                  },
+                )}
+              >
+                <Avatar />
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{user.email}</span>
+                  <span className="truncate text-xs">{user.email}</span>
+                </div>
+                <MoreHorizontal className="ml-auto h-4 w-4" />
+              </SidebarMenuButton>
+            }
+          />
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
             align="start"
@@ -74,7 +82,7 @@ export function NavProfile({ user }: { user: any }) {
               {!isSignOut ? (
                 <LogOut className="mr-2 h-4 w-4" />
               ) : (
-                <AiOutlineLoading3Quarters className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Sign Out
             </DropdownMenuItem>
