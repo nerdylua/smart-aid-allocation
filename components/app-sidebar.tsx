@@ -5,17 +5,29 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/auth-provider";
 import { signOut } from "@/lib/supabase/auth";
+import {
+  LayoutDashboard,
+  FolderOpen,
+  PlusCircle,
+  UserCheck,
+  HandHelping,
+  MessageSquare,
+  AlertTriangle,
+  Search,
+  MapPinned,
+  type LucideIcon,
+} from "lucide-react";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/cases", label: "Cases", icon: "📋" },
-  { href: "/intake", label: "New Intake", icon: "➕" },
-  { href: "/assignments", label: "Assignments", icon: "👤" },
-  { href: "/volunteers", label: "Volunteers", icon: "🤝" },
-  { href: "/messages", label: "Messages", icon: "💬" },
-  { href: "/incidents", label: "Incidents", icon: "🚨" },
-  { href: "/volunteer-hub", label: "Find Cases", icon: "🔍" },
-  { href: "/itineraries", label: "Routes", icon: "🗺️" },
+const navItems: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/cases", label: "Cases", icon: FolderOpen },
+  { href: "/intake", label: "New Intake", icon: PlusCircle },
+  { href: "/assignments", label: "Assignments", icon: UserCheck },
+  { href: "/volunteers", label: "Volunteers", icon: HandHelping },
+  { href: "/messages", label: "Messages", icon: MessageSquare },
+  { href: "/incidents", label: "Incidents", icon: AlertTriangle },
+  { href: "/volunteer-hub", label: "Find Cases", icon: Search },
+  { href: "/itineraries", label: "Routes", icon: MapPinned },
 ];
 
 export function AppSidebar() {
@@ -42,7 +54,7 @@ export function AppSidebar() {
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
-            <span>{item.icon}</span>
+            <item.icon className="h-4 w-4 shrink-0" />
             {item.label}
           </Link>
         ))}

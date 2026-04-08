@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/global/app-sidebar";
 import { AuthProvider } from "@/components/auth-provider";
 import { createAuthClient } from "@/lib/supabase/auth-server";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createAuthClient();
@@ -13,10 +15,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthProvider>
-      <div className="flex h-screen overflow-hidden">
+      <SidebarProvider>
         <AppSidebar />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
+        <SidebarInset>
+          <Breadcrumbs />
+          <main className="flex-1 container mx-auto py-6 px-4">
+            {children}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
     </AuthProvider>
   );
 }
