@@ -26,7 +26,12 @@ function Avatar() {
     </div>
   );
 }
-export function NavProfile({ user }: { user: any }) {
+
+interface NavProfileUser {
+  email?: string | null;
+}
+
+export function NavProfile({ user }: { user: NavProfileUser }) {
   const router = useRouter();
   const [isSignOut, startSignOut] = useTransition();
   const signout = () => {
@@ -53,8 +58,8 @@ export function NavProfile({ user }: { user: any }) {
               >
                 <Avatar />
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.email}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-semibold">{user.email ?? "Unknown"}</span>
+                  <span className="truncate text-xs">{user.email ?? "No email"}</span>
                 </div>
                 <MoreHorizontal className="ml-auto h-4 w-4" />
               </SidebarMenuButton>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,15 +19,18 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function fetchMessages() {
+  const fetchMessages = useCallback(async () => {
     const res = await fetch("/api/messages");
     if (res.ok) setMessages(await res.json());
     setLoading(false);
-  }
+  }, []);
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    const timer = setTimeout(() => {
+      void fetchMessages();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchMessages]);
 
   async function dismiss(id: string) {
     await fetch(`/api/messages/${id}`, {
@@ -35,12 +38,12 @@ export default function MessagesPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "dismissed" }),
     });
-    fetchMessages();
+    void fetchMessages();
   }
 
   async function promote(id: string) {
     await fetch(`/api/messages/${id}/promote`, { method: "POST" });
-    fetchMessages();
+    void fetchMessages();
   }
 
   if (loading) return <div className="text-muted-foreground">Loading messages...</div>;

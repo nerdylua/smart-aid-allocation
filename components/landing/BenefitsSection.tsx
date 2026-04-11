@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "motion/react";
 
 type Benefit = {
@@ -165,9 +166,11 @@ export default function BenefitsSection() {
               >
                 <div className="benefit-asset-container flex max-w-full overflow-hidden">
                   <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-4 py-6 lg:py-0 xl:px-0">
-                    <img
+                    <Image
                       src={b.image}
                       alt={b.title}
+                      width={1200}
+                      height={800}
                       className="h-auto w-full overflow-hidden rounded-2xl"
                     />
                   </div>

@@ -9,7 +9,6 @@ import {
   AlertTriangle,
   Search,
   MapPinned,
-  Settings,
 } from "lucide-react";
 
 const sidebarConfig: SidebarConfig = {

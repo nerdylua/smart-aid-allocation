@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type Props = {
   className?: string;
   width?: number;
@@ -6,7 +8,7 @@ type Props = {
 
 export default function Logo({ className, width = 34, height = 23 }: Props) {
   return (
-    <img
+    <Image
       src="/logo.svg"
       alt="Sahaya Logo"
       width={width}

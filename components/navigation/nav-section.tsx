@@ -54,63 +54,37 @@ export function NavSection({
   // "Panda" active icon state
   const activeIconClass = "group-data-[active=true]/menu-button:text-primary"
 
-  const MenuItems = () => (
-    <>
-      {items.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
-        return (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton 
-              render={<Link href={item.href} />}
-              className={cn(
-                baseButtonClass,
-                hoverClasses,
-                isActive && activeClasses
-              )}
-              data-active={isActive}
-            >
-              <item.icon 
-                className={cn(
-                  baseIconClass,
-                  isActive && activeIconClass
-                )}
-              />
-              <span>{item.title}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        )
-      })}
-    </>
-  )
+  const menuItems = items.map((item) => {
+    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+    return (
+      <SidebarMenuItem key={item.title}>
+        <SidebarMenuButton
+          render={<Link href={item.href} />}
+          className={cn(baseButtonClass, hoverClasses, isActive && activeClasses)}
+          data-active={isActive}
+        >
+          <item.icon className={cn(baseIconClass, isActive && activeIconClass)} />
+          <span>{item.title}</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    )
+  })
 
-  const CollapsibleItems = () => (
-    <SidebarMenuSub>
-      {items.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
-        return (
-          <SidebarMenuSubItem key={item.title}>
-            <SidebarMenuSubButton 
-              render={<Link href={item.href} />}
-              className={cn(
-                baseButtonClass,
-                hoverClasses,
-                isActive && activeClasses
-              )}
-              data-active={isActive}
-            >
-              <item.icon 
-                 className={cn(
-                  baseIconClass,
-                  isActive && activeIconClass
-                )}
-              />
-              <span>{item.title}</span>
-            </SidebarMenuSubButton>
-          </SidebarMenuSubItem>
-        )
-      })}
-    </SidebarMenuSub>
-  )
+  const collapsibleItems = items.map((item) => {
+    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+    return (
+      <SidebarMenuSubItem key={item.title}>
+        <SidebarMenuSubButton
+          render={<Link href={item.href} />}
+          className={cn(baseButtonClass, hoverClasses, isActive && activeClasses)}
+          data-active={isActive}
+        >
+          <item.icon className={cn(baseIconClass, isActive && activeIconClass)} />
+          <span>{item.title}</span>
+        </SidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    )
+  })
 
   return (
     <SidebarGroup>
@@ -131,11 +105,11 @@ export function NavSection({
               />
             </CollapsibleTrigger>
             <CollapsibleContent className="ml-4">
-              <CollapsibleItems />
+              <SidebarMenuSub>{collapsibleItems}</SidebarMenuSub>
             </CollapsibleContent>
           </Collapsible>
         ) : (
-          <MenuItems />
+          <>{menuItems}</>
         )}
       </SidebarMenu>
     </SidebarGroup>

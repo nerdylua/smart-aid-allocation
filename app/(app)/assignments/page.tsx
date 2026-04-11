@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,11 +21,7 @@ export default function AssignmentsPage() {
 
   useRealtimeRefresh(["assignments", "cases"]);
 
-  useEffect(() => {
-    fetchAssignments();
-  }, []);
-
-  async function fetchAssignments() {
+  const fetchAssignments = useCallback(async () => {
     // In production, filter by logged-in volunteer's ID
     const res = await fetch("/api/cases?limit=100");
     const cases = await res.json();
@@ -46,7 +42,14 @@ export default function AssignmentsPage() {
     }
     setAssignments(allAssignments);
     setLoading(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchAssignments();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchAssignments]);
 
   async function updateStatus(assignmentId: string, status: string) {
     await fetch(`/api/assignments/${assignmentId}`, {
@@ -75,7 +78,7 @@ export default function AssignmentsPage() {
       }
     }
 
-    fetchAssignments();
+    void fetchAssignments();
   }
 
   if (loading) {

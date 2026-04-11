@@ -78,7 +78,7 @@ const getAvailableVolunteers = tool({
     if (error) return { error: error.message };
 
     // If skills filter provided, do client-side overlap check
-    let results = data ?? [];
+    const results = data ?? [];
     if (skills && skills.length > 0) {
       const withSkillMatch = results.map((v) => ({
         ...v,

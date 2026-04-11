@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,15 +42,18 @@ export default function IncidentsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  async function fetchIncidents() {
+  const fetchIncidents = useCallback(async () => {
     const res = await fetch("/api/incidents");
     if (res.ok) setIncidents(await res.json());
     setLoading(false);
-  }
+  }, []);
 
   useEffect(() => {
-    fetchIncidents();
-  }, []);
+    const timer = setTimeout(() => {
+      void fetchIncidents();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchIncidents]);
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,7 +72,7 @@ export default function IncidentsPage() {
     });
     setCreating(false);
     setDialogOpen(false);
-    fetchIncidents();
+    void fetchIncidents();
   }
 
   if (loading) return <div className="text-muted-foreground">Loading incidents...</div>;

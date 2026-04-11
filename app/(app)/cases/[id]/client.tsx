@@ -57,7 +57,10 @@ export function CaseDetailClient({ caseData }: { caseData: any }) {
   }, [caseData.id]);
 
   useEffect(() => {
-    fetchNotes();
+    const timer = setTimeout(() => {
+      void fetchNotes();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchNotes]);
 
   async function addNote() {
@@ -70,7 +73,7 @@ export function CaseDetailClient({ caseData }: { caseData: any }) {
     });
     setNewNote("");
     setPostingNote(false);
-    fetchNotes();
+    void fetchNotes();
   }
 
   const assessment: Assessment | null = caseData.assessments?.[0] ?? null;
