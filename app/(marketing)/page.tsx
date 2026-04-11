@@ -1,27 +1,25 @@
-import { BackgroundGradient } from '@/components/revamp/background-gradient'
-import { Hero } from '@/components/revamp/hero'
-import { HoverHighlights } from '@/components/revamp/hover-highlights'
-import { GettingStarted } from '@/components/revamp/getting-started'
-import { FeatureCards } from '@/components/revamp/feature-cards'
-import { CallToAction } from '@/components/revamp/call-to-action'
-import { OpenSourceSection } from '@/components/revamp/open-source-section'
+import Header from "@/components/landing/Header";
+import Hero from "@/components/landing/Hero";
+import BenefitsSection from "@/components/landing/BenefitsSection";
+import ProductsSection from "@/components/landing/ProductsSection";
+import BuiltMoments from "@/components/landing/BuiltMoments";
+import SecuritySection from "@/components/landing/SecuritySection";
+import CtaSection from "@/components/landing/CtaSection";
+import Footer from "@/components/landing/Footer";
 
-export default function LandingPage() {
+export default function Page() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black text-white">
-      <BackgroundGradient />
-
-      <Hero />
-
-      <HoverHighlights />
-
-      <GettingStarted />
-
-      <FeatureCards />
-
-      <CallToAction />
-
-      {/* <OpenSourceSection /> */}
-    </main>
-  )
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <BenefitsSection />
+        <ProductsSection />
+        <BuiltMoments />
+        <SecuritySection />
+      </main>
+      <CtaSection />
+      <Footer />
+    </>
+  );
 }
