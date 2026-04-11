@@ -73,8 +73,8 @@ export function AppSidebar({ config = defaultConfig, ...props }: AppSidebarProps
           </Link>
         </div>
       </SidebarHeader>
-      <SidebarContent>
-        <div className="space-y-4 py-4">
+      <SidebarContent className="overflow-hidden">
+        <div className="space-y-2 py-2">
           {config.sections.map((section, index) => (
             <NavSection 
               key={section.label + index}

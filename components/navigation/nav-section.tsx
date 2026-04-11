@@ -45,7 +45,7 @@ export function NavSection({
   const pathname = usePathname()
 
   // Common button styles
-  const baseButtonClass = "group/menu-button font-medium gap-3 h-9 rounded-md text-sm"
+  const baseButtonClass = "group/menu-button font-medium gap-3 h-8 rounded-md text-sm"
   // "Panda" active state: Light background, dark text/icon
   const activeClasses = "bg-muted text-primary shadow-[0_1px_2px_0_rgb(0_0_0/.05),inset_0_1px_0_0_rgb(255_255_255/.12)]"
   const hoverClasses = "hover:bg-accent"
@@ -57,7 +57,7 @@ export function NavSection({
   const MenuItems = () => (
     <>
       {items.map((item) => {
-        const isActive = pathname === item.href
+        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
         return (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton 
@@ -86,7 +86,7 @@ export function NavSection({
   const CollapsibleItems = () => (
     <SidebarMenuSub>
       {items.map((item) => {
-        const isActive = pathname === item.href
+        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
         return (
           <SidebarMenuSubItem key={item.title}>
             <SidebarMenuSubButton 
