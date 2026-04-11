@@ -1,24 +1,25 @@
 import Logo from "./Logo";
+import Link from "next/link";
 
 type LinkItem = { label: string; href: string };
 
 const PRODUCT_LINKS: LinkItem[] = [
-  { label: "Platform", href: "#" },
-  { label: "Features", href: "#" },
-  { label: "Use Cases", href: "#" },
-  { label: "Docs", href: "#" },
+  { label: "Platform", href: "#capabilities" },
+  { label: "Features", href: "#features" },
+  { label: "Use Cases", href: "#use-cases" },
+  { label: "Dashboard", href: "/dashboard" },
 ];
 
 const COMPANY_LINKS: LinkItem[] = [
-  { label: "About", href: "#" },
-  { label: "Impact", href: "#" },
-  { label: "Blog", href: "#" },
+  { label: "About", href: "#about" },
+  { label: "Impact", href: "#impact" },
+  { label: "Security", href: "#security" },
 ];
 
 const LEGAL_LINKS: LinkItem[] = [
-  { label: "Privacy", href: "#" },
-  { label: "Terms", href: "#" },
-  { label: "Security", href: "#" },
+  { label: "Privacy & Data", href: "#security" },
+  { label: "Terms of Use", href: "#security" },
+  { label: "Access Dashboard", href: "/dashboard" },
 ];
 
 function LinkColumn({ title, links }: { title: string; links: LinkItem[] }) {
@@ -100,16 +101,16 @@ function SocialRow() {
 
 export default function Footer() {
   return (
-    <footer className="marketing-container py-6">
+    <footer id="about" className="marketing-container py-6">
       <div className="border-light-green/20 grid gap-10 border-t pt-10 lg:grid-cols-2 lg:gap-16">
         <div className="space-y-6">
-          <a href="#" className="inline-block" aria-label="Sahaya home">
+          <Link href="/" className="inline-block" aria-label="Sahaya home">
             <Logo className="h-12 w-auto" />
-          </a>
+          </Link>
           <p className="text-light-green/60 max-w-md text-sm leading-relaxed">
             Community Need Intelligence Grid. An AI-powered platform that
             transforms scattered aid signals into prioritized, equitable
-            responses — from intake to verified closure.
+            responses - from intake to verified closure.
           </p>
           <SocialRow />
         </div>

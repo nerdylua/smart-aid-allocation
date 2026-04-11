@@ -12,12 +12,12 @@ const ITEMS: AccordionItem[] = [
   {
     title: "Role-based access & audit trail",
     content:
-      "Every action — from intake to closure — is logged with timestamps and actor identity. Row-level security isolates organizations, and role-based controls govern coordinators, field workers, and volunteers.",
+      "Every action - from intake to closure - is logged with timestamps and actor identity. Row-level security isolates organizations, and role-based controls govern coordinators, field workers, and volunteers.",
   },
   {
     title: "Human-in-the-loop AI oversight",
     content:
-      "Critical cases with severity 9-10 automatically escalate for human review. Low-confidence triage scores are flagged, never silently deprioritized. AI assists — humans decide.",
+      "Critical cases with severity 9-10 automatically escalate for human review. Low-confidence triage scores are flagged, never silently deprioritized. AI assists - humans decide.",
   },
   {
     title: "Explainable decisions",
@@ -91,7 +91,7 @@ function Accordion() {
 
 export default function SecuritySection() {
   return (
-    <section className="mb-8 mx-2 lg:mx-9">
+    <section id="security" className="mb-8 mx-2 lg:mx-9">
       <div className="marketing-container">
         <div className="grid gap-5 md:grid-cols-12">
           <motion.div

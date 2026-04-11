@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import BackgroundGrid from "./BackgroundGrid";
 
@@ -8,8 +9,8 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 function AnnouncementPill() {
   return (
-    <a
-      href="#"
+    <Link
+      href="/dashboard"
       className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full p-px transition-shadow duration-300 shadow-[0_0_20px_-8px_rgba(127,238,100,0.5)] hover:shadow-[0_0_30px_-5px_rgba(127,238,100,0.6)]"
     >
       <div
@@ -38,7 +39,7 @@ function AnnouncementPill() {
           <path d="m12 5 7 7-7 7" />
         </svg>
       </span>
-    </a>
+    </Link>
   );
 }
 
@@ -243,9 +244,10 @@ export default function Hero() {
   return (
     <div
       ref={heroRef}
+      id="platform"
       className="relative flex min-h-[90vh] items-center justify-center overflow-hidden"
     >
-      {/* Background grid — curtain fade effect */}
+      {/* Background grid - curtain fade effect */}
       <BackgroundGrid gridLineStyles={HERO_GRID_STYLES} />
 
       {/* Radial gradient background */}
@@ -257,7 +259,7 @@ export default function Hero() {
         }}
       />
 
-      {/* Interactive cursor glow — desktop only */}
+      {/* Interactive cursor glow - desktop only */}
       <div
         className="pointer-events-none absolute left-1/2 top-[11%] z-[1] h-[42vh] min-h-[260px] w-[min(92vw,980px)] -translate-x-1/2 rounded-[40px] opacity-45"
         style={{
@@ -348,7 +350,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
         >
           Transform scattered community need signals into prioritized, equitable
-          responses — with AI-powered triage, smart volunteer matching, and
+          responses - with AI-powered triage, smart volunteer matching, and
           closed-loop accountability from intake to verified closure.
         </motion.p>
 
@@ -360,24 +362,24 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.7, ease: EASE }}
         >
           {/* Primary */}
-          <a
+          <Link
             className="group/btn relative inline-flex items-center justify-center overflow-hidden rounded-full bg-c-green-100 px-6 py-2.5 text-sm font-medium text-black transition-all active:scale-[0.97]"
-            href="#"
+            href="/dashboard"
           >
             <span className="absolute inset-0 origin-left scale-x-0 rounded-full bg-light-green transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
-            <span className="relative z-10">Get Started</span>
-          </a>
+            <span className="relative z-10">Open Dashboard</span>
+          </Link>
 
           {/* Secondary */}
-          <button
+          <a
             className="group/btn relative inline-flex items-center justify-center overflow-hidden rounded-full border border-light-green/30 px-6 py-2.5 text-sm font-medium text-light-green transition-all active:scale-[0.97]"
-            type="button"
+            href="#features"
           >
             <span className="absolute inset-0 origin-left scale-x-0 rounded-full bg-c-green-100 transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
             <span className="relative z-10 transition-colors duration-300 group-hover/btn:text-black">
               See How It Works
             </span>
-          </button>
+          </a>
         </motion.div>
 
         <motion.div

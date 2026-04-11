@@ -104,7 +104,7 @@ export default function BuiltMoments() {
   }, [scroll]);
 
   return (
-    <div className="my-32 mx-2 lg:mx-9">
+    <div id="use-cases" className="my-32 mx-2 lg:mx-9">
       <motion.div
         className="marketing-container mb-10"
         initial={{ opacity: 0, y: 24 }}

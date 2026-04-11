@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Image from "next/image"
 
 type NavItem = {
   title: string
@@ -59,8 +60,15 @@ export function AppSidebar({ config = defaultConfig, ...props }: AppSidebarProps
       <SidebarHeader>
         <div className="relative border-b border-border/10 px-6 py-5 backdrop-blur-xl">
           <Link href={config.brand?.href || "/"} className="relative flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-              S
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <Image
+                src="/logo.svg"
+                alt={`${config.brand?.title || "Sahaya"} logo`}
+                width={32}
+                height={32}
+                className="h-8 w-8"
+                priority
+              />
             </div>
             <div className="flex flex-col gap-0.5">
               <h1 className="text-xl font-semibold tracking-tight text-foreground">

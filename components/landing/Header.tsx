@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Logo from "./Logo";
 
 type NavLink = {
@@ -9,12 +10,12 @@ type NavLink = {
 };
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Platform", href: "#" },
-  { label: "Features", href: "#" },
-  { label: "Use Cases", href: "#" },
-  { label: "Impact", href: "#" },
-  { label: "About", href: "#" },
-  { label: "Docs", href: "#" },
+  { label: "Platform", href: "#capabilities" },
+  { label: "Features", href: "#features" },
+  { label: "Use Cases", href: "#use-cases" },
+  { label: "Impact", href: "#impact" },
+  { label: "Trust", href: "#security" },
+  { label: "About", href: "#about" },
 ];
 
 export default function Header() {
@@ -41,10 +42,10 @@ export default function Header() {
         <div className="relative mx-auto max-w-6xl">
           <nav className="bg-dark-gray relative grid grid-cols-[1fr_auto_1fr] items-center rounded-full p-2.5 shadow-lg transition-all duration-300">
             <div className="relative ml-0 flex justify-start">
-              <a className="relative inline-flex items-center gap-2" href="#" onClick={closeMenu}>
+              <Link className="relative inline-flex items-center gap-2" href="/" onClick={closeMenu}>
                 <Logo />
                 <span className="text-light-green text-base font-semibold tracking-wide">Sahaya</span>
-              </a>
+              </Link>
             </div>
             <div className="hidden items-center justify-center gap-7 text-sm md:flex xl:gap-10">
               {NAV_LINKS.map((link) => (
@@ -55,19 +56,19 @@ export default function Header() {
             </div>
             <div className="hidden items-center gap-7 justify-self-end text-sm md:flex">
               <div className="flex flex-row items-center justify-between gap-x-4 text-lg md:text-sm">
-                <a
-                  href="#"
+                <Link
+                  href="/login"
                   className="text-light-green hover:text-c-green-100 flex items-center whitespace-nowrap"
                 >
                   Log In
-                </a>
-                <a
+                </Link>
+                <Link
                   className="text-c-green-100 group relative flex items-center gap-2.5 overflow-hidden rounded-full pl-3"
-                  href="#"
+                  href="/dashboard"
                 >
                   <span className="bg-c-green-100 absolute inset-0 origin-right scale-x-0 transform rounded-full transition-transform duration-150 ease-out group-hover:scale-x-100" />
                   <span className="text-c-green-100 relative z-10 whitespace-nowrap transition-colors duration-150 ease-in-out group-hover:text-black">
-                    Sign Up
+                    Open Dashboard
                   </span>
                   <span className="bg-c-green-100 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full p-1.5">
                     <svg
@@ -85,7 +86,7 @@ export default function Header() {
                       <path d="m12 5 7 7-7 7" />
                     </svg>
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
             <div className="text-light-green col-start-3 mr-2 justify-self-end md:hidden">
@@ -147,20 +148,20 @@ export default function Header() {
               ))}
             </div>
             <div className="border-light-green/10 flex items-center gap-3 border-t p-3">
-              <a
-                href="#"
+              <Link
+                href="/login"
                 className="btn-marketing btn-secondary btn-dark flex-1"
                 onClick={closeMenu}
               >
                 Log In
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/dashboard"
                 className="btn-marketing btn-primary btn-dark flex-1"
                 onClick={closeMenu}
               >
-                Sign Up
-              </a>
+                Open Dashboard
+              </Link>
             </div>
           </div>
         </div>

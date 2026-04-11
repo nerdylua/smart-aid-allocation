@@ -19,10 +19,13 @@ export default function LoginPage() {
             className="w-full"
             onClick={() => signInWithGoogle()}
           >
-            Sign in with Google
+            Continue with Google
           </Button>
           <p className="text-xs text-center text-muted-foreground">
-            Sign in to access the coordination dashboard.
+            Sign in to access the command dashboard.
+          </p>
+          <p className="text-xs text-center text-muted-foreground">
+            Returning to the dashboard after authentication is automatic.
           </p>
         </CardContent>
       </Card>

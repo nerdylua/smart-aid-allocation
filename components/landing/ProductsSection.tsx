@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useMotionTemplate } from "motion/react";
+import Link from "next/link";
 import { type MouseEvent } from "react";
 
 type Product = {
@@ -138,33 +139,33 @@ const NotebooksIcon = () => (
 const PRODUCTS: Product[] = [
   {
     title: "Command Center",
-    description: "Real-time dashboard with KPIs, hotspot maps, priority queues, and bias auditing — all in one view.",
-    href: "#",
+    description: "Real-time dashboard with KPIs, hotspot maps, priority queues, and bias auditing - all in one view.",
+    href: "/dashboard",
     icon: <InferenceIcon />,
   },
   {
     title: "Case Management",
     description: "Full lifecycle tracking from intake through triage, matching, dispatch, and verified closure.",
-    href: "#",
+    href: "/cases",
     icon: <TrainingIcon />,
   },
   {
     title: "Incident Response",
     description:
       "Group related cases under campaigns with target tracking, progress monitoring, and coordinated multi-org response.",
-    href: "#",
+    href: "/incidents",
     icon: <SandboxesIcon />,
   },
   {
     title: "Route Planning",
     description: "Optimized itineraries for field workers with nearest-neighbor routing, distance estimates, and stop management.",
-    href: "#",
+    href: "/itineraries",
     icon: <BatchIcon />,
   },
   {
     title: "Volunteer Hub",
     description: "Self-service portal for volunteers to browse matching cases, accept assignments, and submit completion proof.",
-    href: "#",
+    href: "/volunteer-hub",
     icon: <NotebooksIcon />,
   },
 ];
@@ -204,7 +205,7 @@ const PLATFORM_FEATURES = [
   {
     title: "Confidence-decoupled scoring",
     description:
-      "Priority ranking uses severity, vulnerability, and freshness — never data confidence. Uncertain but urgent cases get escalated for human review, not buried.",
+      "Priority ranking uses severity, vulnerability, and freshness - never data confidence. Uncertain but urgent cases get escalated for human review, not buried.",
     icon: <CpuIcon />,
   },
   {
@@ -216,13 +217,13 @@ const PLATFORM_FEATURES = [
   {
     title: "Multi-channel fusion",
     description:
-      "Web forms, CSV batch imports from partner NGOs, and email auto-ingestion — all feeding the same canonical triage pipeline with zero data silos.",
+      "Web forms, CSV batch imports from partner NGOs, and email auto-ingestion - all feeding the same canonical triage pipeline with zero data silos.",
     icon: <PlugIcon />,
   },
   {
     title: "Realtime subscriptions",
     description:
-      "Supabase Realtime pushes every status change instantly to all open dashboards. When a volunteer accepts, coordinators see it immediately — no polling.",
+      "Supabase Realtime pushes every status change instantly to all open dashboards. When a volunteer accepts, coordinators see it immediately - no polling.",
     icon: <NetworkIcon />,
   },
 ];
@@ -277,7 +278,7 @@ function SpotlightFeature({
 
 export default function ProductsSection() {
   return (
-    <div className="marketing-light-bg-container py-16 text-black">
+    <div id="capabilities" className="marketing-light-bg-container py-16 text-black">
       <div className="marketing-container border-landing-dark-green-border flex flex-col gap-8 pb-1 sm:gap-10">
         <motion.div
           className="flex flex-col gap-4"
@@ -294,9 +295,10 @@ export default function ProductsSection() {
 
         <div className="product-cards -mx-4 flex w-[calc(100%+32px)] flex-col gap-8 overflow-x-auto p-4 [scrollbar-width:none] sm:flex-row sm:justify-start">
           {PRODUCTS.map((p) => (
-            <div
+            <Link
               key={p.title}
-              className="product-card group relative z-0 flex cursor-default gap-6 sm:w-[232px] sm:flex-col"
+              href={p.href}
+              className="product-card group relative z-0 flex cursor-pointer gap-6 sm:w-[232px] sm:flex-col"
             >
               <div className="pointer-events-none absolute -inset-4 -z-10 bg-[#CBDECA] opacity-0 transition-opacity group-hover:opacity-100 group-active:opacity-100" />
               <div className="flex h-[158px] w-[158px] flex-shrink-0 items-center justify-center bg-black p-10 sm:h-[232px] sm:w-[232px] sm:p-14">
@@ -310,12 +312,15 @@ export default function ProductsSection() {
                   {p.description}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
 
-      <div className="marketing-container pt-13 flex flex-col gap-20 sm:flex-row sm:pt-16">
+      <div
+        id="architecture"
+        className="marketing-container pt-13 flex flex-col gap-20 sm:flex-row sm:pt-16"
+      >
         <motion.div
           className="flex flex-col gap-6 sm:w-1/3"
           initial={{ opacity: 0, y: 24 }}
@@ -333,12 +338,12 @@ export default function ProductsSection() {
             response at scale.
           </p>
           <div>
-            <a
+            <Link
               className="btn-marketing btn-secondary btn-light"
-              href="#"
+              href="/dashboard"
             >
-              Learn More
-            </a>
+              View Dashboard
+            </Link>
           </div>
         </motion.div>
 

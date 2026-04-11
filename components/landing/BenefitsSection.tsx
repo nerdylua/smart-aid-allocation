@@ -15,28 +15,28 @@ const BENEFITS: Benefit[] = [
     label: "AI-POWERED TRIAGE",
     title: "AI-powered triage",
     description:
-      "Three specialized agents score severity, vulnerability, and freshness — surfacing the most urgent needs first while flagging uncertain cases for human review.",
+      "Three specialized agents score severity, vulnerability, and freshness - surfacing the most urgent needs first while flagging uncertain cases for human review.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "SMART VOLUNTEER MATCHING",
     title: "Smart volunteer matching",
     description:
-      "Automatically rank and match volunteers by skill overlap, language preference, and geographic proximity — preventing overloading and ensuring the right person responds.",
+      "Automatically rank and match volunteers by skill overlap, language preference, and geographic proximity - preventing overloading and ensuring the right person responds.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "MULTI-CHANNEL INTAKE",
     title: "Multi-channel intake",
     description:
-      "Accept need signals from web forms, CSV batch imports, and email — all feeding a single canonical pipeline with auto-geocoding and duplicate detection.",
+      "Accept need signals from web forms, CSV batch imports, and email - all feeding a single canonical pipeline with auto-geocoding and duplicate detection.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "EQUITY MONITORING",
     title: "Equity monitoring",
     description:
-      "Built-in bias auditing measures disparity by region, language, and need type — ensuring aid reaches every community fairly and verifiably.",
+      "Built-in bias auditing measures disparity by region, language, and need type - ensuring aid reaches every community fairly and verifiably.",
     image: "/assets/placeholder.svg",
   },
 ];
@@ -75,7 +75,10 @@ export default function BenefitsSection() {
   }, []);
 
   return (
-    <div className="marketing-container mb-32 mt-16 grid w-full grid-cols-1 sm:mt-20 lg:my-28 lg:grid-cols-[16.66%_1fr] lg:gap-12">
+    <div
+      id="features"
+      className="marketing-container mb-32 mt-16 grid w-full grid-cols-1 sm:mt-20 lg:my-28 lg:grid-cols-[16.66%_1fr] lg:gap-12"
+    >
       {/* Left sidebar */}
       <div className="row-2 col-1 relative hidden lg:block">
         <div className="sticky flex flex-col gap-4 lg:top-32">
@@ -164,7 +167,7 @@ export default function BenefitsSection() {
                   <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-4 py-6 lg:py-0 xl:px-0">
                     <img
                       src={b.image}
-                      alt="Placeholder"
+                      alt={b.title}
                       className="h-auto w-full overflow-hidden rounded-2xl"
                     />
                   </div>

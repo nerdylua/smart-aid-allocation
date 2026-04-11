@@ -2,7 +2,10 @@
 1. Change to Bengaluru data and try to find real data
 1. Hosting and public the repo
 1. Voice integration
-1. Landing page (final ai review needed)
-1a. sign in use cta component
-1b. both landing and app css shud match
+1. sign in use cta component
+logout shud route to /
+connect landing to project
+placeholder images need to be replaced
+change header
+full repo lint
 1. PPT

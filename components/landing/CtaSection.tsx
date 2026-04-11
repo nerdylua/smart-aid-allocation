@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 
 export default function CtaSection() {
   return (
-    <section className="marketing-container mt-8 mb-8 md:mb-10">
+    <section id="impact" className="marketing-container mt-8 mb-8 md:mb-10">
       <div
         className="mb-8 h-[2px] w-full"
         style={{
@@ -45,12 +46,12 @@ export default function CtaSection() {
           <h2 className="marketing-h2 mb-7 max-w-lg text-center md:mb-14 md:text-left">
             Start coordinating impact today.
           </h2>
-          <a
+          <Link
             className="btn-marketing btn-primary btn-dark"
-            href="#"
+            href="/dashboard"
           >
-            Get Started
-          </a>
+            Open Dashboard
+          </Link>
           <p className="text-light-green/60 mt-6 text-sm">Free for community organizations</p>
         </motion.div>
       </div>
