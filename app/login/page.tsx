@@ -24,9 +24,6 @@ export default function LoginPage() {
           <p className="text-xs text-center text-muted-foreground">
             Sign in to access the command dashboard.
           </p>
-          <p className="text-xs text-center text-muted-foreground">
-            Returning to the dashboard after authentication is automatic.
-          </p>
         </CardContent>
       </Card>
     </div>

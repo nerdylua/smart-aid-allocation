@@ -38,7 +38,7 @@ export function NavProfile({ user }: { user: NavProfileUser }) {
     startSignOut(async () => {
       const supabase = createBrowserClient();
       await supabase.auth.signOut();
-      router.push("/signin");
+      router.push("/");
     });
   };
   return (

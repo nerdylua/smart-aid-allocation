@@ -57,18 +57,12 @@ export default function Header() {
             <div className="hidden items-center gap-7 justify-self-end text-sm md:flex">
               <div className="flex flex-row items-center justify-between gap-x-4 text-lg md:text-sm">
                 <Link
-                  href="/login"
-                  className="text-light-green hover:text-c-green-100 flex items-center whitespace-nowrap"
-                >
-                  Log In
-                </Link>
-                <Link
                   className="text-c-green-100 group relative flex items-center gap-2.5 overflow-hidden rounded-full pl-3"
-                  href="/dashboard"
+                  href="/login"
                 >
                   <span className="bg-c-green-100 absolute inset-0 origin-right scale-x-0 transform rounded-full transition-transform duration-150 ease-out group-hover:scale-x-100" />
                   <span className="text-c-green-100 relative z-10 whitespace-nowrap transition-colors duration-150 ease-in-out group-hover:text-black">
-                    Open Dashboard
+                    Log In
                   </span>
                   <span className="bg-c-green-100 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full p-1.5">
                     <svg
@@ -150,17 +144,10 @@ export default function Header() {
             <div className="border-light-green/10 flex items-center gap-3 border-t p-3">
               <Link
                 href="/login"
-                className="btn-marketing btn-secondary btn-dark flex-1"
-                onClick={closeMenu}
-              >
-                Log In
-              </Link>
-              <Link
-                href="/dashboard"
                 className="btn-marketing btn-primary btn-dark flex-1"
                 onClick={closeMenu}
               >
-                Open Dashboard
+                Log In
               </Link>
             </div>
           </div>

@@ -11,7 +11,7 @@ export async function signInWithGoogle() {
 export async function signOut() {
   const supabase = createBrowserClient();
   await supabase.auth.signOut();
-  window.location.replace("/login");
+  window.location.replace("/");
 }
 
 export async function getSession() {
