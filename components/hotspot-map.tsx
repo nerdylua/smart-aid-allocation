@@ -85,7 +85,15 @@ function parseLocation(loc: unknown): { lat: number; lng: number } | null {
 // Leaflet requires browser APIs, so we dynamic-import with SSR disabled
 const MapInner = dynamic(() => import("./hotspot-map-inner"), { ssr: false });
 
-export function HotspotMap({ cases }: { cases: MapCase[] }) {
+interface HotspotMapProps {
+  cases: MapCase[];
+  heightClassName?: string;
+}
+
+export function HotspotMap({
+  cases,
+  heightClassName = "h-[420px] md:h-[520px] xl:h-[580px]",
+}: HotspotMapProps) {
   const casesWithCoords: MapCaseWithCoords[] = [];
 
   for (const c of cases) {
@@ -101,7 +109,7 @@ export function HotspotMap({ cases }: { cases: MapCase[] }) {
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden" style={{ height: 400 }}>
+    <div className={`border rounded-lg overflow-hidden ${heightClassName}`}>
       <MapInner cases={casesWithCoords} />
     </div>
   );

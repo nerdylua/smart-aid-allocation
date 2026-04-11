@@ -1,73 +1,196 @@
 # Sahaya: Community Need Intelligence Grid
 
-A unified decision layer that ingests scattered need signals, prioritizes by severity and vulnerability, then routes requests to best-fit volunteers with closure tracking and equity monitoring.
+Sahaya is an AI-assisted coordination platform for community aid operations. It unifies intake from multiple channels, prioritizes cases with triage scoring, matches volunteers, dispatches with SLA rules, and tracks closure with verification and audit trails.
 
-## Stack
+## What It Does
 
-- **Framework**: Next.js 16 (App Router + API Routes)
-- **Database**: Supabase (PostgreSQL + PostGIS)
-- **AI**: Vercel AI SDK (ToolLoopAgent) + OpenAI GPT-5.4-mini
-- **Maps**: React Leaflet + OpenStreetMap + Nominatim geocoding
-- **Auth**: Google OAuth via Supabase Auth
-- **UI**: Tailwind CSS + shadcn/ui
+- Ingests needs from form, CSV, email, and message promotion flows.
+- Prioritizes and routes cases with AI triage, matching, and dispatch.
+- Tracks assignments, incidents, notes, itineraries, and closure verification.
+- Surfaces equity metrics through bias/disparity reporting.
 
-## Setup
+## Tech Stack
+
+- Framework: Next.js 16 (App Router + Route Handlers)
+- Language: TypeScript + React 19
+- Database: Supabase Postgres + PostGIS
+- Auth: Supabase Auth (Google OAuth + email/password client flow)
+- AI: Vercel AI SDK `ToolLoopAgent` + OpenAI model provider
+- UI: Tailwind CSS v4 + shadcn/ui
+- Maps: Leaflet / React Leaflet + OpenStreetMap + Nominatim geocoding
+
+## Architecture Flow
+
+```text
+intake (form/csv/email/messages)
+	-> geocode + normalize
+	-> triage agent (severity, vulnerability, confidence, freshness)
+	-> match agent (skills, language, distance, load)
+	-> dispatch agent (SLA rules, assignment/escalation)
+	-> volunteer execution
+	-> verification
+	-> case closure + audit + notes
+```
+
+## Product Areas (UI)
+
+- `/dashboard`: KPIs, queue, maps, incident snapshots.
+- `/cases` and `/cases/[id]`: case listing and detailed operations.
+- `/intake`: manual intake and batch creation.
+- `/assignments`, `/volunteers`, `/messages`: day-to-day operations.
+- `/incidents` and `/incidents/[id]`: incident grouping and progress.
+- `/volunteer-hub` and `/itineraries`: self-service and route planning.
+- `/login`: branded sign-in (Google + email/password form).
+
+## API Surface (Route Handlers)
+
+### Cases
+
+- `GET /api/cases`
+- `GET /api/cases/[id]`
+- `PATCH /api/cases/[id]`
+- `GET /api/cases/available`
+- `POST /api/cases/[id]/interest`
+- `GET /api/cases/[id]/notes`
+- `POST /api/cases/[id]/notes`
+
+### Intake
+
+- `POST /api/intakes`
+- `POST /api/intakes/batch`
+- `POST /api/intake/email`
+
+### AI Operations
+
+- `POST /api/assess` (triage)
+- `POST /api/match` (candidate ranking)
+- `POST /api/assignments` (dispatch / escalate)
+
+### Assignments and Verification
+
+- `PATCH /api/assignments/[id]`
+- `POST /api/verify`
+
+### Messages
+
+- `GET /api/messages`
+- `PATCH /api/messages/[id]`
+- `POST /api/messages/[id]/promote`
+
+### Volunteers
+
+- `GET /api/volunteers`
+- `PATCH /api/volunteers/[id]`
+
+### Incidents
+
+- `GET /api/incidents`
+- `POST /api/incidents`
+- `GET /api/incidents/[id]`
+- `PATCH /api/incidents/[id]`
+
+### Itineraries
+
+- `GET /api/itineraries`
+- `POST /api/itineraries`
+- `GET /api/itineraries/[id]`
+- `PATCH /api/itineraries/[id]`
+
+### Reports
+
+- `GET /api/reports`
+- `GET /api/reports/bias`
+
+## AI Agents
+
+- `lib/agents/triage.ts`
+	- Produces severity, vulnerability, confidence, freshness, rationale, flagging.
+	- Persists assessment output.
+- `lib/agents/matching.ts`
+	- Ranks volunteers with skill/language/proximity/load context.
+	- Returns structured top candidates.
+- `lib/agents/dispatch.ts`
+	- Applies severity-based SLA rules.
+	- Creates assignment or escalates when needed.
+
+## Authentication and Access Control
+
+- Public entry points: `/`, `/login`, `/auth/*`, and `/api/*` through proxy allow-list.
+- App shell (`app/(app)`) performs server-side session check and redirects to `/login` when unauthenticated.
+- Supabase client helpers support:
+	- `signInWithGoogle()`
+	- `signInWithPassword(email, password)`
+	- `signOut()`
+
+Important: the email/password form is implemented client-side, but Supabase email/password provider must be enabled and users must exist with password credentials.
+
+## Data Model (Migrations)
+
+Migrations live in `supabase/migrations/` and currently include:
+
+- `001_initial_schema.sql`
+- `002_fix_priority_formula.sql`
+- `003_case_notes.sql`
+- `004_volunteer_status.sql`
+- `005_incidents.sql`
+- `006_messages.sql`
+- `007_geo_rpc.sql`
+- `008_dispatch_rules.sql`
+- `009_itineraries.sql`
+- `010_add_email_source.sql`
+
+Core entities include organizations, users, cases, assessments, assignments, verifications, audit events, case notes, incidents, messages, itineraries, and dispatch rules.
+
+## Local Setup
 
 ```bash
 npm install
 cp .env.local.example .env.local
-# Fill in Supabase, OpenAI, and (optionally) Google OAuth + Resend credentials
 ```
 
-Run all migrations in `supabase/migrations/` (001–009) against your Supabase project, then seed:
-
-```bash
-npx tsx scripts/seed.ts
-```
-
-Start the dev server:
+Fill required values in `.env.local`, then run:
 
 ```bash
 npm run dev
 ```
 
+Open `http://localhost:3000`.
+
 ## Environment Variables
 
 | Variable | Required | Purpose |
-|----------|----------|---------|
+| --- | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | Yes | Supabase anon/publishable key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server-side only) |
-| `OPENAI_API_KEY` | Yes | OpenAI API key for AI agents |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | No | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | No | Google OAuth client secret |
-| `RESEND_API_KEY` | No | Resend API key (email intake + confirmations) |
-| `RESEND_FROM_EMAIL` | No | Sender address for confirmation emails |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Server-side admin operations |
+| `OPENAI_API_KEY` | Yes | AI agent model access |
+| `RESEND_API_KEY` | No | Email intake confirmation sending |
+| `RESEND_FROM_EMAIL` | No | Sender identity for Resend |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | No | Optional Google client identifier |
+| `GOOGLE_CLIENT_SECRET` | No | Optional Google OAuth secret |
 
-## Core Pipeline
+## Scripts
 
+- `npm run dev`: start development server.
+- `npm run build`: production build.
+- `npm run start`: run production server.
+- `npm run lint`: ESLint checks.
+
+## Project Structure (High Level)
+
+```text
+app/
+	(marketing)/      Landing pages
+	(app)/            Auth-protected operations UI
+	api/              Route handlers
+	auth/callback/    OAuth code exchange
+	login/            Login page
+components/
+	landing/          Marketing + login section UI blocks
+	global/, ui/      Shared app shell + primitives
+lib/
+	agents/           AI agents
+	supabase/         Auth/client/server helpers
+	config/           Sidebar/header/footer configuration
+supabase/migrations/
 ```
-intake (form / CSV / email) → geocode → AI triage → AI match → dispatch (SLA rules) → accept → complete → verify → close
-```
-
-Every step is audited, logged to the case timeline, and visible in the realtime dashboard.
-
-## Key Features
-
-- **3 AI agents**: Triage (scoring + flagging), Matching (skill/language/distance), Dispatch (SLA-aware assignment + auto-escalation)
-- **Bias audit panel**: Disparity analysis by region, language, and need type
-- **Email intake**: Resend-powered email intake auto-creates cases, triggers AI triage, and sends confirmation emails
-- **Real geocoding**: Nominatim + PostGIS for map pins from any location
-- **Incident grouping**: Bundle related cases under campaigns with progress tracking
-- **Volunteer self-service**: Browse and claim cases matching your skills
-- **Route planning**: Nearest-neighbor itineraries with distance estimates
-- **Configurable dispatch rules**: Data-driven SLA tiers and auto-escalation policy
-- **Supabase Realtime**: Dashboard and case detail auto-refresh on changes
-
-## UN SDG Alignment
-
-- SDG 1 (No Poverty) — routing aid to most vulnerable
-- SDG 3 (Good Health) — medical need prioritization
-- SDG 10 (Reduced Inequalities) — bias audit + vulnerability-aware scoring
-- SDG 11 (Sustainable Cities) — hotspot detection for urban response
-- SDG 17 (Partnerships) — multi-org design with incident grouping
