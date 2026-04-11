@@ -89,10 +89,12 @@ function Accordion() {
   );
 }
 
-export default function SecuritySection() {
+export default function TrustSection() {
   return (
-    <section id="security" className="mb-8 mx-2 lg:mx-9">
-      <div className="marketing-container">
+    <>
+      <div id="impact" />
+      <section id="security" className="mb-8 mx-2 lg:mx-9">
+        <div className="marketing-container">
         <div className="grid gap-5 md:grid-cols-12">
           <motion.div
             className="md:col-span-5"
@@ -130,7 +132,8 @@ export default function SecuritySection() {
         <div className="mt-12 md:hidden">
           <Accordion />
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }

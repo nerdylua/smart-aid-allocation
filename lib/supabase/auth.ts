@@ -8,6 +8,11 @@ export async function signInWithGoogle() {
   });
 }
 
+export async function signInWithPassword(email: string, password: string) {
+  const supabase = createBrowserClient();
+  return supabase.auth.signInWithPassword({ email, password });
+}
+
 export async function signOut() {
   const supabase = createBrowserClient();
   await supabase.auth.signOut();

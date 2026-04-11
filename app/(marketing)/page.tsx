@@ -3,8 +3,7 @@ import Hero from "@/components/landing/Hero";
 import BenefitsSection from "@/components/landing/BenefitsSection";
 import ProductsSection from "@/components/landing/ProductsSection";
 import BuiltMoments from "@/components/landing/BuiltMoments";
-import SecuritySection from "@/components/landing/SecuritySection";
-import CtaSection from "@/components/landing/CtaSection";
+import TrustSection from "@/components/landing/TrustSection";
 import Footer from "@/components/landing/Footer";
 
 export default function Page() {
@@ -16,9 +15,8 @@ export default function Page() {
         <BenefitsSection />
         <ProductsSection />
         <BuiltMoments />
-        <SecuritySection />
+        <TrustSection />
       </main>
-      <CtaSection />
       <Footer />
     </>
   );
