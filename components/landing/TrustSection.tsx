@@ -12,12 +12,12 @@ const ITEMS: AccordionItem[] = [
   {
     title: "Role-based access & audit trail",
     content:
-      "Every action - from intake to closure - is logged with timestamps and actor identity. Row-level security isolates organizations, and role-based controls govern coordinators, field workers, and volunteers.",
+      "Every action, from intake to closure, is logged with timestamps and actor identity. Row-level security isolates organizations and role-based controls govern coordinators, field workers and volunteers.",
   },
   {
     title: "Human-in-the-loop AI oversight",
     content:
-      "Critical cases with severity 9-10 automatically escalate for human review. Low-confidence triage scores are flagged, never silently deprioritized. AI assists - humans decide.",
+      "Critical cases with severity 9-10 automatically escalate for human review. Low-confidence triage scores are flagged, never silently deprioritized. AI assists and humans decide.",
   },
   {
     title: "Explainable decisions",
@@ -119,12 +119,18 @@ export default function TrustSection() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
             <video
-              className="max-w-[560px] w-full object-contain"
+              className="pointer-events-none select-none max-w-[560px] w-full object-contain"
               autoPlay
               loop
               muted
               playsInline
+              controls={false}
+              disablePictureInPicture
+              disableRemotePlayback
               preload="auto"
+              tabIndex={-1}
+              draggable={false}
+              onContextMenu={(event) => event.preventDefault()}
               src="/assets/accordian.mp4"
             />
           </motion.div>

@@ -139,32 +139,32 @@ const NotebooksIcon = () => (
 const PRODUCTS: Product[] = [
   {
     title: "Command Center",
-    description: "Real-time dashboard with KPIs, hotspot maps, priority queues, and bias auditing - all in one view.",
+    description: "Real-time dashboard with KPIs, hotspot maps, priority queues and bias auditing, all in one view.",
     href: "/dashboard",
     icon: <InferenceIcon />,
   },
   {
     title: "Case Management",
-    description: "Full lifecycle tracking from intake through triage, matching, dispatch, and verified closure.",
+    description: "Full lifecycle tracking from intake through triage, matching, dispatch and verified closure.",
     href: "/cases",
     icon: <TrainingIcon />,
   },
   {
     title: "Incident Response",
     description:
-      "Group related cases under campaigns with target tracking, progress monitoring, and coordinated multi-org response.",
+      "Group related cases under campaigns with target tracking, progress monitoring and coordinated multi-org response.",
     href: "/incidents",
     icon: <SandboxesIcon />,
   },
   {
     title: "Route Planning",
-    description: "Optimized itineraries for field workers with nearest-neighbor routing, distance estimates, and stop management.",
+    description: "Optimized itineraries for field workers with nearest-neighbor routing, distance estimates and stop management.",
     href: "/itineraries",
     icon: <BatchIcon />,
   },
   {
     title: "Volunteer Hub",
-    description: "Self-service portal for volunteers to browse matching cases, accept assignments, and submit completion proof.",
+    description: "Self-service portal for volunteers to browse matching cases, accept assignments and submit completion proof.",
     href: "/volunteer-hub",
     icon: <NotebooksIcon />,
   },
@@ -205,7 +205,7 @@ const PLATFORM_FEATURES = [
   {
     title: "Confidence-decoupled scoring",
     description:
-      "Priority ranking uses severity, vulnerability, and freshness - never data confidence. Uncertain but urgent cases get escalated for human review, not buried.",
+      "Priority ranking uses severity, vulnerability and freshness, never data confidence. Uncertain but urgent cases get escalated for human review, not buried.",
     icon: <CpuIcon />,
   },
   {
@@ -217,13 +217,13 @@ const PLATFORM_FEATURES = [
   {
     title: "Multi-channel fusion",
     description:
-      "Web forms, CSV batch imports from partner NGOs, and email auto-ingestion - all feeding the same canonical triage pipeline with zero data silos.",
+      "Web forms, CSV batch imports from partner NGOs and email auto-ingestion, all feeding the same canonical triage pipeline with zero data silos.",
     icon: <PlugIcon />,
   },
   {
     title: "Realtime subscriptions",
     description:
-      "Supabase Realtime pushes every status change instantly to all open dashboards. When a volunteer accepts, coordinators see it immediately - no polling.",
+      "Supabase Realtime pushes every status change instantly to all open dashboards. When a volunteer accepts, coordinators see it immediately with no polling.",
     icon: <NetworkIcon />,
   },
 ];
@@ -334,7 +334,7 @@ export default function ProductsSection() {
           <h2 className="marketing-h2">Built on a powerful foundation</h2>
           <p className="text-[#5d695d] font-normal">
             From AI agents to realtime infrastructure, every layer of Sahaya is
-            engineered to deliver fast, fair, and accountable humanitarian
+            engineered to deliver fast, fair and accountable humanitarian
             response at scale.
           </p>
           <div>

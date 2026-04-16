@@ -344,13 +344,15 @@ export default function Hero() {
 
         {/* Subtitle */}
         <motion.p
-          className="text-c-pale-green-80 marketing-h5-medium max-w-[640px] text-center"
+          className="text-c-pale-green-80 marketing-h5-medium max-w-[640px] text-center md:max-w-[760px]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
         >
           Transform scattered community need signals into prioritized, equitable
-          responses - with AI-powered triage, smart volunteer matching, and
+          <span className="hidden md:inline"><br /></span>
+          responses with AI-powered triage, smart volunteer matching and
+          <span className="hidden md:inline"><br /></span>
           closed-loop accountability from intake to verified closure.
         </motion.p>
 

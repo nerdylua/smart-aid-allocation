@@ -13,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Sahaya",
   description:
-    "AI-powered community need intelligence grid. Transform scattered aid signals into prioritized, equitable responses - from intake to verified closure.",
+    "AI-powered community need intelligence grid. Transform scattered aid signals into prioritized, equitable responses from intake to verified closure.",
 };
 
 export default function RootLayout({

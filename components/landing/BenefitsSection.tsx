@@ -16,28 +16,28 @@ const BENEFITS: Benefit[] = [
     label: "AI-POWERED TRIAGE",
     title: "AI-powered triage",
     description:
-      "Three specialized agents score severity, vulnerability, and freshness - surfacing the most urgent needs first while flagging uncertain cases for human review.",
+      "Three specialized agents score severity, vulnerability and freshness, surfacing the most urgent needs first while flagging uncertain cases for human review.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "SMART VOLUNTEER MATCHING",
     title: "Smart volunteer matching",
     description:
-      "Automatically rank and match volunteers by skill overlap, language preference, and geographic proximity - preventing overloading and ensuring the right person responds.",
+      "Automatically rank and match volunteers by skill overlap, language preference and geographic proximity, preventing overloading and ensuring the right person responds.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "MULTI-CHANNEL INTAKE",
     title: "Multi-channel intake",
     description:
-      "Accept need signals from web forms, CSV batch imports, and email - all feeding a single canonical pipeline with auto-geocoding and duplicate detection.",
+      "Accept need signals from web forms, CSV batch imports and email, all feeding a single canonical pipeline with auto-geocoding and duplicate detection.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "EQUITY MONITORING",
     title: "Equity monitoring",
     description:
-      "Built-in bias auditing measures disparity by region, language, and need type - ensuring aid reaches every community fairly and verifiably.",
+      "Built-in bias auditing measures disparity by region, language and need type, ensuring aid reaches every community fairly and verifiably.",
     image: "/assets/placeholder.svg",
   },
 ];
@@ -126,7 +126,7 @@ export default function BenefitsSection() {
         >
           <span>
             Designed to turn scattered needs
-            <br className="hidden xl:block" /> into coordinated action.
+            <br className="hidden xl:block" /> into coordinated action
           </span>
         </motion.h2>
       </div>

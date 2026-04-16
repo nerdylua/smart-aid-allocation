@@ -110,7 +110,7 @@ export default function Footer() {
           <p className="text-light-green/60 max-w-md text-sm leading-relaxed">
             Community Need Intelligence Grid. An AI-powered platform that
             transforms scattered aid signals into prioritized, equitable
-            responses - from intake to verified closure.
+            responses from intake to verified closure.
           </p>
           <SocialRow />
         </div>

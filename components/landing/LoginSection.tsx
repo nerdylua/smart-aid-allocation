@@ -83,9 +83,14 @@ export default function LoginSection() {
             loop
             muted
             playsInline
+            controls={false}
             disablePictureInPicture
+            disableRemotePlayback
             autoPlay
-            className="h-full w-full max-w-[95%] md:max-w-[92%]"
+            tabIndex={-1}
+            draggable={false}
+            onContextMenu={(event) => event.preventDefault()}
+            className="pointer-events-none select-none h-full w-full max-w-[95%] md:max-w-[92%]"
             style={{ objectFit: "contain" }}
           >
             <source
