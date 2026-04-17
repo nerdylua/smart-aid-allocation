@@ -75,6 +75,7 @@ export interface Case {
   description: string | null;
   location: { lat: number; lng: number } | null;
   location_label: string | null;
+  incident_id: string | null;
   needs: NeedItem[];
   person_info: PersonInfo;
   status: CaseStatus;
@@ -120,16 +121,6 @@ export interface Verification {
   proof_media_url: string | null;
   verified_by: string | null;
   outcome: VerificationOutcome;
-  created_at: string;
-}
-
-export interface Feedback {
-  id: string;
-  case_id: string;
-  assignment_id: string | null;
-  rating: number;
-  comments: string | null;
-  submitted_by: string | null;
   created_at: string;
 }
 
@@ -218,7 +209,7 @@ export type OrganizationUpdate = Partial<Organization>;
 export type UserInsert = { email: string; name: string; id?: string; org_id?: string | null; role?: UserRole; language?: string; skills?: string[]; location?: { lat: number; lng: number } | null; availability?: { available: boolean; [key: string]: unknown }; staffing?: StaffingStatus; action?: ActionStatus; status_updated_at?: string; created_at?: string };
 export type UserUpdate = Partial<User>;
 
-export type CaseInsert = { title: string; id?: string; org_id?: string | null; source_channel?: CaseSource; description?: string | null; location?: { lat: number; lng: number } | null; location_label?: string | null; needs?: NeedItem[]; person_info?: PersonInfo; status?: CaseStatus; language?: string; created_by?: string | null; created_at?: string; updated_at?: string };
+export type CaseInsert = { title: string; id?: string; org_id?: string | null; source_channel?: CaseSource; description?: string | null; location?: { lat: number; lng: number } | null; location_label?: string | null; incident_id?: string | null; needs?: NeedItem[]; person_info?: PersonInfo; status?: CaseStatus; language?: string; created_by?: string | null; created_at?: string; updated_at?: string };
 export type CaseUpdate = Partial<Case>;
 
 export type AssessmentInsert = { case_id: string; severity: number; vulnerability: number; confidence: number; freshness: number; rationale: string; id?: string; is_flagged?: boolean; flagged_reason?: string | null; reviewed_by?: string | null; reviewed_at?: string | null; created_at?: string };
@@ -230,9 +221,6 @@ export type AssignmentUpdate = Partial<Assignment>;
 export type VerificationInsert = { assignment_id: string; outcome: VerificationOutcome; id?: string; proof_notes?: string | null; proof_media_url?: string | null; verified_by?: string | null; created_at?: string };
 export type VerificationUpdate = Partial<Verification>;
 
-export type FeedbackInsert = { case_id: string; rating: number; id?: string; assignment_id?: string | null; comments?: string | null; submitted_by?: string | null; created_at?: string };
-export type FeedbackUpdate = Partial<Feedback>;
-
 export type AuditEventInsert = { entity_type: string; entity_id: string; action: string; id?: string; actor_id?: string | null; metadata?: Record<string, unknown>; created_at?: string };
 export type AuditEventUpdate = Partial<AuditEvent>;
 
@@ -241,6 +229,12 @@ export type IncidentUpdate = Partial<Incident>;
 
 export type MessageInsert = { channel: string; sender: string; body: string; id?: string; status?: MessageStatus; promoted_case_id?: string | null; metadata?: Record<string, unknown>; created_at?: string };
 export type MessageUpdate = Partial<Message>;
+
+export type ItineraryInsert = { volunteer_id: string; planned_date: string; id?: string; name?: string | null; status?: ItineraryStatus; assignments?: string[]; total_distance_km?: number | null; estimated_hours?: number | null; created_at?: string };
+export type ItineraryUpdate = Partial<Itinerary>;
+
+export type DispatchRuleInsert = { name: string; sla_hours: number; id?: string; condition_min_severity?: number; condition_max_severity?: number; condition_min_priority?: number; auto_escalate?: boolean; notify_channels?: string[]; is_active?: boolean; created_at?: string };
+export type DispatchRuleUpdate = Partial<DispatchRule>;
 
 export type CaseNoteInsert = { case_id: string; content: string; id?: string; author_id?: string | null; author_name?: string | null; note_type?: NoteType; created_at?: string };
 export type CaseNoteUpdate = Partial<CaseNote>;
@@ -254,14 +248,47 @@ export interface Database {
       assessments: { Row: Assessment; Insert: AssessmentInsert; Update: AssessmentUpdate; Relationships: [] };
       assignments: { Row: Assignment; Insert: AssignmentInsert; Update: AssignmentUpdate; Relationships: [] };
       verifications: { Row: Verification; Insert: VerificationInsert; Update: VerificationUpdate; Relationships: [] };
-      feedback: { Row: Feedback; Insert: FeedbackInsert; Update: FeedbackUpdate; Relationships: [] };
       audit_events: { Row: AuditEvent; Insert: AuditEventInsert; Update: AuditEventUpdate; Relationships: [] };
       case_notes: { Row: CaseNote; Insert: CaseNoteInsert; Update: CaseNoteUpdate; Relationships: [] };
       messages: { Row: Message; Insert: MessageInsert; Update: MessageUpdate; Relationships: [] };
       incidents: { Row: Incident; Insert: IncidentInsert; Update: IncidentUpdate; Relationships: [] };
+      itineraries: { Row: Itinerary; Insert: ItineraryInsert; Update: ItineraryUpdate; Relationships: [] };
+      dispatch_rules: { Row: DispatchRule; Insert: DispatchRuleInsert; Update: DispatchRuleUpdate; Relationships: [] };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      get_nearby_case_count: {
+        Args: { p_lat: number; p_lng: number; p_radius_meters?: number };
+        Returns: number;
+      };
+      get_case_for_matching: {
+        Args: { p_case_id: string };
+        Returns: {
+          id: string;
+          title: string;
+          needs: NeedItem[];
+          location_label: string | null;
+          language: string;
+          person_info: PersonInfo;
+          lat: number | null;
+          lng: number | null;
+        }[];
+      };
+      get_available_volunteers_for_matching: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          name: string;
+          skills: string[];
+          language: string;
+          availability: Record<string, unknown>;
+          staffing: StaffingStatus;
+          action: ActionStatus;
+          lat: number | null;
+          lng: number | null;
+        }[];
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
