@@ -1,12 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAuthenticatedUser } from "@/lib/supabase/api-auth";
+
+const MAX_BATCH_SIZE = 200;
 
 export async function POST(request: NextRequest) {
+  const user = await getAuthenticatedUser(request);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { cases } = await request.json();
 
   if (!Array.isArray(cases) || cases.length === 0) {
     return NextResponse.json(
       { error: "cases array is required" },
+      { status: 400 }
+    );
+  }
+
+  if (cases.length > MAX_BATCH_SIZE) {
+    return NextResponse.json(
+      { error: `batch size exceeds limit of ${MAX_BATCH_SIZE}` },
       { status: 400 }
     );
   }
