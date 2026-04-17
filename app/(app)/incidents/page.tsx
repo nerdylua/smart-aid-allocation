@@ -100,7 +100,7 @@ export default function IncidentsPage() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <Label htmlFor="name">Name *</Label>
-                <Input id="name" name="name" placeholder="e.g. Dharavi Flooding 2026" required />
+                <Input id="name" name="name" placeholder="e.g. Koramangala Flooding 2026" required />
               </div>
               <div>
                 <Label htmlFor="type">Type</Label>

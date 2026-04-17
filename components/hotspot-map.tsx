@@ -21,22 +21,21 @@ export interface MapCaseWithCoords {
   assessments: { severity: number; priority_score: number }[];
 }
 
-// Fallback coords for known Mumbai locations
 const locationCoordsFallback: Record<string, [number, number]> = {
-  "Dharavi, Mumbai": [19.043, 72.855],
-  "Kurla West, Mumbai": [19.0728, 72.8826],
-  "Andheri East, Mumbai": [19.1197, 72.8464],
-  "Govandi, Mumbai": [19.0583, 72.912],
-  "Malad West, Mumbai": [19.1861, 72.8385],
-  "Bandra East, Mumbai": [19.0596, 72.8411],
-  "Chembur, Mumbai": [19.0522, 72.9005],
-  "Vikhroli, Mumbai": [19.1066, 72.9253],
-  "Borivali West, Mumbai": [19.2307, 72.8567],
-  "Thane, Mumbai Metro": [19.2183, 72.9781],
-  "Mankhurd, Mumbai": [19.0666, 72.9333],
-  "Dadar, Mumbai": [19.0178, 72.8478],
-  "Sion, Mumbai": [19.04, 72.8622],
-  "Mulund, Mumbai": [19.1726, 72.9561],
+  "Shivajinagar, Bengaluru": [12.9841, 77.6053],
+  "Koramangala, Bengaluru": [12.9352, 77.6245],
+  "Indiranagar, Bengaluru": [12.9719, 77.6412],
+  "Electronic City, Bengaluru": [12.8456, 77.6603],
+  "Yeshwanthpur, Bengaluru": [13.028, 77.54],
+  "Whitefield, Bengaluru": [12.9698, 77.75],
+  "HSR Layout, Bengaluru": [12.9082, 77.6476],
+  "Marathahalli, Bengaluru": [12.9569, 77.7011],
+  "Yelahanka, Bengaluru": [13.1007, 77.5963],
+  "Hoskote, Bengaluru Metro": [13.0707, 77.7984],
+  "Bommanahalli, Bengaluru": [12.8995, 77.622],
+  "Malleshwaram, Bengaluru": [13.006, 77.57],
+  "Jayanagar, Bengaluru": [12.925, 77.5938],
+  "KR Puram, Bengaluru": [13.0055, 77.7],
 };
 
 function parseLocation(loc: unknown): { lat: number; lng: number } | null {

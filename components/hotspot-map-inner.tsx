@@ -5,13 +5,13 @@ import "leaflet/dist/leaflet.css";
 import type { MapCaseWithCoords } from "./hotspot-map";
 
 function severityColor(severity: number): string {
-  if (severity >= 8) return "#ef4444"; // red
-  if (severity >= 5) return "#f97316"; // orange
-  return "#3b82f6"; // blue
+  if (severity >= 8) return "#ef4444";
+  if (severity >= 5) return "#f97316";
+  return "#3b82f6";
 }
 
 export default function HotspotMapInner({ cases }: { cases: MapCaseWithCoords[] }) {
-  const center: [number, number] = [19.076, 72.8777]; // Mumbai center
+  const center: [number, number] = [12.9716, 77.5946]; // Bengaluru
 
   return (
     <MapContainer

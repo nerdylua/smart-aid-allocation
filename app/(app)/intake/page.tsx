@@ -180,7 +180,7 @@ export default function IntakePage() {
                 <Input
                   id="location_label"
                   name="location_label"
-                  placeholder="e.g. Dharavi, Mumbai"
+                  placeholder="e.g. Koramangala, Bengaluru"
                 />
               </div>
               <div>

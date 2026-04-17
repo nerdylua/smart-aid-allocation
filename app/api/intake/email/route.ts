@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     );
     if (locationMatch) {
       const locationLabel = locationMatch[1];
-      const coords = await geocode(locationLabel + ", Mumbai").catch(
+      const coords = await geocode(locationLabel + ", Bengaluru").catch(
         () => null
       );
       if (coords) {

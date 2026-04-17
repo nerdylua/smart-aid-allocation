@@ -1,10 +1,6 @@
 /**
  * Seed script for Community Need Intelligence Grid
- * Generates realistic demo data: organizations, users, volunteers, cases, assessments, assignments
- * Based on Mumbai metropolitan area coordinates
- *
- * Usage: npx tsx scripts/seed.ts
- * Requires: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local
+ * Based on Bengaluru metropolitan area coordinates
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -17,8 +13,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Mumbai area bounding box (approximate)
-const MUMBAI = { lat: 19.076, lng: 72.8777 };
+// Bengaluru area bounding box
+const BENGALURU = { lat: 12.9716, lng: 77.5946 };
 const jitter = (base: number, range: number) =>
   base + (Math.random() - 0.5) * range;
 
@@ -28,7 +24,7 @@ const jitter = (base: number, range: number) =>
 const organizations = [
   { name: "MedRelief India", type: "medical_relief" },
   { name: "Annapurna Food Bank", type: "food_bank" },
-  { name: "Mumbai Disaster Response Network", type: "disaster_response" },
+  { name: "Bengaluru Disaster Response Network", type: "disaster_response" },
   { name: "ShikshaSetu Education Trust", type: "education" },
 ];
 
@@ -39,13 +35,13 @@ const users = [
   // Coordinators
   { name: "Priya Sharma", email: "priya@medrelief.org", role: "coordinator", language: "hi", skills: ["medical_triage", "logistics"], orgIdx: 0 },
   { name: "Ravi Desai", email: "ravi@annapurna.org", role: "coordinator", language: "mr", skills: ["food_distribution", "inventory"], orgIdx: 1 },
-  { name: "Sunita Patel", email: "sunita@mdrn.org", role: "coordinator", language: "hi", skills: ["emergency_management", "communication"], orgIdx: 2 },
+  { name: "Sunita Patel", email: "sunita@bdrn.org", role: "coordinator", language: "hi", skills: ["emergency_management", "communication"], orgIdx: 2 },
   { name: "Amit Joshi", email: "amit@shikshasetu.org", role: "coordinator", language: "en", skills: ["education", "counseling"], orgIdx: 3 },
 
   // Field workers
   { name: "Farah Khan", email: "farah@medrelief.org", role: "field_worker", language: "hi", skills: ["first_aid", "data_collection"], orgIdx: 0 },
   { name: "Deepak Yadav", email: "deepak@annapurna.org", role: "field_worker", language: "mr", skills: ["logistics", "community_outreach"], orgIdx: 1 },
-  { name: "Meera Nair", email: "meera@mdrn.org", role: "field_worker", language: "ml", skills: ["search_rescue", "first_aid"], orgIdx: 2 },
+  { name: "Meera Nair", email: "meera@bdrn.org", role: "field_worker", language: "ml", skills: ["search_rescue", "first_aid"], orgIdx: 2 },
 
   // Volunteers
   { name: "Dr. Anita Kulkarni", email: "anita.vol@gmail.com", role: "volunteer", language: "hi", skills: ["medical", "first_aid", "triage"], orgIdx: 0 },
@@ -63,35 +59,35 @@ const users = [
 ];
 
 // ============================================================
-// CASES (diverse needs, statuses, locations across Mumbai)
+// CASES (diverse needs, statuses, locations across Bengaluru)
 // ============================================================
 const caseTemplates = [
   // NEW cases (awaiting triage)
-  { title: "Elderly woman needs insulin supply", description: "72-year-old diabetic woman in Dharavi has run out of insulin. Lives alone, mobility limited. Neighbor reported via helpline.", location_label: "Dharavi, Mumbai", needs: [{ type: "medical", detail: "insulin supply" }], person_info: { name: "Lakshmi Devi", age: 72, gender: "female", family_size: 1, vulnerabilities: ["elderly", "chronic_illness", "mobility_limited"] }, status: "new", language: "hi", orgIdx: 0, lat: 19.0430, lng: 72.8550 },
-  { title: "Family displaced by flooding in Kurla", description: "Family of 6 displaced from ground floor apartment due to monsoon flooding. Need temporary shelter, food, and dry clothes.", location_label: "Kurla West, Mumbai", needs: [{ type: "shelter", detail: "temporary housing" }, { type: "food", detail: "meals for 6" }, { type: "supplies", detail: "dry clothing" }], person_info: { name: "Irfan Qureshi", age: 38, gender: "male", family_size: 6, vulnerabilities: ["children_under_5", "displaced"] }, status: "new", language: "ur", orgIdx: 2, lat: 19.0728, lng: 72.8826 },
-  { title: "Child not attending school for 3 weeks", description: "10-year-old boy stopped attending school. Parents are daily wage workers, child may be working at a local shop.", location_label: "Andheri East, Mumbai", needs: [{ type: "education", detail: "school re-enrollment" }, { type: "counseling", detail: "family counseling" }], person_info: { name: "Arjun Kamble", age: 10, gender: "male", family_size: 5, vulnerabilities: ["child", "child_labor_risk"] }, status: "new", language: "mr", orgIdx: 3, lat: 19.1197, lng: 72.8464 },
-  { title: "Pregnant woman without prenatal care", description: "7-month pregnant woman in Govandi has not received any prenatal checkups. Low income, no health insurance.", location_label: "Govandi, Mumbai", needs: [{ type: "medical", detail: "prenatal care" }, { type: "transport", detail: "to hospital" }], person_info: { name: "Rekha Waghmare", age: 24, gender: "female", family_size: 3, vulnerabilities: ["pregnant", "low_income"] }, status: "new", language: "mr", orgIdx: 0, lat: 19.0583, lng: 72.9120 },
-  { title: "Water contamination in community well", description: "Residents of a Malad slum colony report brown/foul-smelling water from community well. 15+ families affected.", location_label: "Malad West, Mumbai", needs: [{ type: "water", detail: "safe drinking water" }, { type: "health", detail: "water quality testing" }], person_info: { name: "Community Report", family_size: 60, vulnerabilities: ["community_wide", "children"] }, status: "new", language: "hi", orgIdx: 2, lat: 19.1861, lng: 72.8385 },
+  { title: "Elderly woman needs insulin supply", description: "72-year-old diabetic woman in Shivajinagar has run out of insulin. Lives alone, mobility limited. Neighbor reported via helpline.", location_label: "Shivajinagar, Bengaluru", needs: [{ type: "medical", detail: "insulin supply" }], person_info: { name: "Lakshmi Devi", age: 72, gender: "female", family_size: 1, vulnerabilities: ["elderly", "chronic_illness", "mobility_limited"] }, status: "new", language: "hi", orgIdx: 0, lat: 12.9841, lng: 77.6053 },
+  { title: "Family displaced by flooding in Koramangala", description: "Family of 6 displaced from ground floor apartment due to monsoon flooding. Need temporary shelter, food, and dry clothes.", location_label: "Koramangala, Bengaluru", needs: [{ type: "shelter", detail: "temporary housing" }, { type: "food", detail: "meals for 6" }, { type: "supplies", detail: "dry clothing" }], person_info: { name: "Irfan Qureshi", age: 38, gender: "male", family_size: 6, vulnerabilities: ["children_under_5", "displaced"] }, status: "new", language: "ur", orgIdx: 2, lat: 12.9352, lng: 77.6245 },
+  { title: "Child not attending school for 3 weeks", description: "10-year-old boy stopped attending school. Parents are daily wage workers, child may be working at a local shop.", location_label: "Indiranagar, Bengaluru", needs: [{ type: "education", detail: "school re-enrollment" }, { type: "counseling", detail: "family counseling" }], person_info: { name: "Arjun Kamble", age: 10, gender: "male", family_size: 5, vulnerabilities: ["child", "child_labor_risk"] }, status: "new", language: "mr", orgIdx: 3, lat: 12.9719, lng: 77.6412 },
+  { title: "Pregnant woman without prenatal care", description: "7-month pregnant woman in Electronic City has not received any prenatal checkups. Low income, no health insurance.", location_label: "Electronic City, Bengaluru", needs: [{ type: "medical", detail: "prenatal care" }, { type: "transport", detail: "to hospital" }], person_info: { name: "Rekha Waghmare", age: 24, gender: "female", family_size: 3, vulnerabilities: ["pregnant", "low_income"] }, status: "new", language: "mr", orgIdx: 0, lat: 12.8456, lng: 77.6603 },
+  { title: "Water contamination in community well", description: "Residents of a Yeshwanthpur slum colony report brown/foul-smelling water from community well. 15+ families affected.", location_label: "Yeshwanthpur, Bengaluru", needs: [{ type: "water", detail: "safe drinking water" }, { type: "health", detail: "water quality testing" }], person_info: { name: "Community Report", family_size: 60, vulnerabilities: ["community_wide", "children"] }, status: "new", language: "hi", orgIdx: 2, lat: 13.0280, lng: 77.5400 },
 
   // TRIAGED cases (scored by AI, awaiting match)
-  { title: "Burn victim needs wound care supplies", description: "35-year-old man suffered cooking gas burn on arms. Treated at hospital, discharged, needs daily wound dressing.", location_label: "Bandra East, Mumbai", needs: [{ type: "medical", detail: "wound care supplies and training" }], person_info: { name: "Suresh Patil", age: 35, gender: "male", family_size: 2, vulnerabilities: ["injury", "low_income"] }, status: "triaged", language: "hi", orgIdx: 0, lat: 19.0596, lng: 72.8411, severity: 7, vulnerability: 5, confidence: 0.88 },
-  { title: "Single mother needs food rations", description: "Single mother of 3 lost domestic work job. No income for 2 weeks. Children showing signs of malnutrition.", location_label: "Chembur, Mumbai", needs: [{ type: "food", detail: "monthly ration kit" }, { type: "livelihood", detail: "job referral" }], person_info: { name: "Geeta Sawant", age: 29, gender: "female", family_size: 4, vulnerabilities: ["single_parent", "children_malnourished", "unemployed"] }, status: "triaged", language: "mr", orgIdx: 1, lat: 19.0522, lng: 72.9005, severity: 8, vulnerability: 9, confidence: 0.92 },
-  { title: "Roof collapse risk in monsoon-damaged house", description: "Cracks in load-bearing wall after heavy rains. Family of 4 still living inside. Structural assessment needed.", location_label: "Vikhroli, Mumbai", needs: [{ type: "shelter", detail: "structural assessment" }, { type: "shelter", detail: "temporary relocation" }], person_info: { name: "Prakash Bhosle", age: 45, gender: "male", family_size: 4, vulnerabilities: ["structural_risk", "elderly_parent"] }, status: "triaged", language: "mr", orgIdx: 2, lat: 19.1066, lng: 72.9253, severity: 9, vulnerability: 7, confidence: 0.75 },
+  { title: "Burn victim needs wound care supplies", description: "35-year-old man suffered cooking gas burn on arms. Treated at hospital, discharged, needs daily wound dressing.", location_label: "Whitefield, Bengaluru", needs: [{ type: "medical", detail: "wound care supplies and training" }], person_info: { name: "Suresh Patil", age: 35, gender: "male", family_size: 2, vulnerabilities: ["injury", "low_income"] }, status: "triaged", language: "hi", orgIdx: 0, lat: 12.9698, lng: 77.7500, severity: 7, vulnerability: 5, confidence: 0.88 },
+  { title: "Single mother needs food rations", description: "Single mother of 3 lost domestic work job. No income for 2 weeks. Children showing signs of malnutrition.", location_label: "HSR Layout, Bengaluru", needs: [{ type: "food", detail: "monthly ration kit" }, { type: "livelihood", detail: "job referral" }], person_info: { name: "Geeta Sawant", age: 29, gender: "female", family_size: 4, vulnerabilities: ["single_parent", "children_malnourished", "unemployed"] }, status: "triaged", language: "mr", orgIdx: 1, lat: 12.9082, lng: 77.6476, severity: 8, vulnerability: 9, confidence: 0.92 },
+  { title: "Roof collapse risk in monsoon-damaged house", description: "Cracks in load-bearing wall after heavy rains. Family of 4 still living inside. Structural assessment needed.", location_label: "Marathahalli, Bengaluru", needs: [{ type: "shelter", detail: "structural assessment" }, { type: "shelter", detail: "temporary relocation" }], person_info: { name: "Prakash Bhosle", age: 45, gender: "male", family_size: 4, vulnerabilities: ["structural_risk", "elderly_parent"] }, status: "triaged", language: "mr", orgIdx: 2, lat: 12.9569, lng: 77.7011, severity: 9, vulnerability: 7, confidence: 0.75 },
 
   // ASSIGNED cases (volunteer matched)
-  { title: "Wheelchair-bound man needs physiotherapy", description: "Post-accident paraplegic, 28 years old. Needs weekly physiotherapy sessions at home.", location_label: "Borivali West, Mumbai", needs: [{ type: "medical", detail: "home physiotherapy" }], person_info: { name: "Nikhil Jadhav", age: 28, gender: "male", family_size: 3, vulnerabilities: ["disability", "mobility_limited"] }, status: "assigned", language: "hi", orgIdx: 0, lat: 19.2307, lng: 72.8567, severity: 6, vulnerability: 8, confidence: 0.95 },
-  { title: "Migrant workers need ration cards assistance", description: "Group of 8 interstate migrant workers unable to access PDS rations without local documentation.", location_label: "Thane, Mumbai Metro", needs: [{ type: "documentation", detail: "ration card application" }, { type: "food", detail: "interim food supply" }], person_info: { name: "Group - Bihar Migrants", family_size: 8, vulnerabilities: ["migrant", "undocumented", "food_insecure"] }, status: "assigned", language: "hi", orgIdx: 1, lat: 19.2183, lng: 72.9781, severity: 7, vulnerability: 8, confidence: 0.82 },
+  { title: "Wheelchair-bound man needs physiotherapy", description: "Post-accident paraplegic, 28 years old. Needs weekly physiotherapy sessions at home.", location_label: "Yelahanka, Bengaluru", needs: [{ type: "medical", detail: "home physiotherapy" }], person_info: { name: "Nikhil Jadhav", age: 28, gender: "male", family_size: 3, vulnerabilities: ["disability", "mobility_limited"] }, status: "assigned", language: "hi", orgIdx: 0, lat: 13.1007, lng: 77.5963, severity: 6, vulnerability: 8, confidence: 0.95 },
+  { title: "Migrant workers need ration cards assistance", description: "Group of 8 interstate migrant workers unable to access PDS rations without local documentation.", location_label: "Hoskote, Bengaluru Metro", needs: [{ type: "documentation", detail: "ration card application" }, { type: "food", detail: "interim food supply" }], person_info: { name: "Group - Bihar Migrants", family_size: 8, vulnerabilities: ["migrant", "undocumented", "food_insecure"] }, status: "assigned", language: "hi", orgIdx: 1, lat: 13.0707, lng: 77.7984, severity: 7, vulnerability: 8, confidence: 0.82 },
 
   // IN-PROGRESS cases
-  { title: "Flood-damaged community toilet restoration", description: "Community toilet block serving 200+ people damaged in flooding. Volunteer construction team dispatched.", location_label: "Mankhurd, Mumbai", needs: [{ type: "sanitation", detail: "toilet repair" }, { type: "supplies", detail: "construction materials" }], person_info: { name: "Ward Committee Report", family_size: 200, vulnerabilities: ["community_wide", "sanitation_crisis"] }, status: "in_progress", language: "hi", orgIdx: 2, lat: 19.0666, lng: 72.9333, severity: 8, vulnerability: 7, confidence: 0.90 },
+  { title: "Flood-damaged community toilet restoration", description: "Community toilet block serving 200+ people damaged in flooding. Volunteer construction team dispatched.", location_label: "Bommanahalli, Bengaluru", needs: [{ type: "sanitation", detail: "toilet repair" }, { type: "supplies", detail: "construction materials" }], person_info: { name: "Ward Committee Report", family_size: 200, vulnerabilities: ["community_wide", "sanitation_crisis"] }, status: "in_progress", language: "hi", orgIdx: 2, lat: 12.8995, lng: 77.6220, severity: 8, vulnerability: 7, confidence: 0.90 },
 
   // COMPLETED cases (awaiting verification)
-  { title: "Medicine delivery to bedridden patient", description: "Monthly medicine delivery for 80-year-old bedridden patient completed. Volunteer confirmed delivery.", location_label: "Dadar, Mumbai", needs: [{ type: "medical", detail: "monthly medicines" }], person_info: { name: "Ramesh Naik", age: 80, gender: "male", family_size: 2, vulnerabilities: ["elderly", "bedridden"] }, status: "completed", language: "mr", orgIdx: 0, lat: 19.0178, lng: 72.8478, severity: 6, vulnerability: 9, confidence: 0.97 },
-  { title: "School supplies distributed to 12 children", description: "Notebooks, pens, and bags distributed to children in Dharavi community center.", location_label: "Dharavi, Mumbai", needs: [{ type: "education", detail: "school supplies" }], person_info: { name: "Dharavi Community Center", family_size: 12, vulnerabilities: ["children", "low_income"] }, status: "completed", language: "hi", orgIdx: 3, lat: 19.0440, lng: 72.8555, severity: 4, vulnerability: 6, confidence: 0.99 },
+  { title: "Medicine delivery to bedridden patient", description: "Monthly medicine delivery for 80-year-old bedridden patient completed. Volunteer confirmed delivery.", location_label: "Malleshwaram, Bengaluru", needs: [{ type: "medical", detail: "monthly medicines" }], person_info: { name: "Ramesh Naik", age: 80, gender: "male", family_size: 2, vulnerabilities: ["elderly", "bedridden"] }, status: "completed", language: "mr", orgIdx: 0, lat: 13.0060, lng: 77.5700, severity: 6, vulnerability: 9, confidence: 0.97 },
+  { title: "School supplies distributed to 12 children", description: "Notebooks, pens, and bags distributed to children in Shivajinagar community center.", location_label: "Shivajinagar, Bengaluru", needs: [{ type: "education", detail: "school supplies" }], person_info: { name: "Shivajinagar Community Center", family_size: 12, vulnerabilities: ["children", "low_income"] }, status: "completed", language: "hi", orgIdx: 3, lat: 12.9841, lng: 77.6053, severity: 4, vulnerability: 6, confidence: 0.99 },
 
   // CLOSED cases (fully verified)
-  { title: "Emergency food kit to flood-affected family", description: "15-day emergency food kit delivered and confirmed received by family of 5.", location_label: "Sion, Mumbai", needs: [{ type: "food", detail: "emergency ration" }], person_info: { name: "Yasmin Shaikh", age: 42, gender: "female", family_size: 5, vulnerabilities: ["displaced", "flood_affected"] }, status: "closed", language: "ur", orgIdx: 1, lat: 19.0400, lng: 72.8622, severity: 7, vulnerability: 7, confidence: 0.94 },
-  { title: "Temporary shelter provided for 2 weeks", description: "Family relocated to community hall during monsoon. Returned home after structural repair.", location_label: "Mulund, Mumbai", needs: [{ type: "shelter", detail: "temporary housing" }], person_info: { name: "Dinesh More", age: 55, gender: "male", family_size: 3, vulnerabilities: ["elderly", "structural_damage"] }, status: "closed", language: "mr", orgIdx: 2, lat: 19.1726, lng: 72.9561, severity: 8, vulnerability: 6, confidence: 0.88 },
+  { title: "Emergency food kit to flood-affected family", description: "15-day emergency food kit delivered and confirmed received by family of 5.", location_label: "Jayanagar, Bengaluru", needs: [{ type: "food", detail: "emergency ration" }], person_info: { name: "Yasmin Shaikh", age: 42, gender: "female", family_size: 5, vulnerabilities: ["displaced", "flood_affected"] }, status: "closed", language: "ur", orgIdx: 1, lat: 12.9250, lng: 77.5938, severity: 7, vulnerability: 7, confidence: 0.94 },
+  { title: "Temporary shelter provided for 2 weeks", description: "Family relocated to community hall during monsoon. Returned home after structural repair.", location_label: "KR Puram, Bengaluru", needs: [{ type: "shelter", detail: "temporary housing" }], person_info: { name: "Dinesh More", age: 55, gender: "male", family_size: 3, vulnerabilities: ["elderly", "structural_damage"] }, status: "closed", language: "mr", orgIdx: 2, lat: 13.0055, lng: 77.7000, severity: 8, vulnerability: 6, confidence: 0.88 },
 ];
 
 // ============================================================
@@ -120,7 +116,7 @@ async function seed() {
     language: u.language,
     skills: u.skills,
     org_id: orgs[u.orgIdx].id,
-    location: `SRID=4326;POINT(${jitter(MUMBAI.lng, 0.15)} ${jitter(MUMBAI.lat, 0.15)})`,
+    location: `SRID=4326;POINT(${jitter(BENGALURU.lng, 0.15)} ${jitter(BENGALURU.lat, 0.15)})`,
     availability: { available: true, hours_per_week: u.role === "volunteer" ? 10 + Math.floor(Math.random() * 20) : 40 },
     staffing: u.role === "volunteer" ? staffingOptions[Math.floor(Math.random() * staffingOptions.length)] : "available",
     action: u.role === "volunteer" ? actionOptions[Math.floor(Math.random() * actionOptions.length)] : "idle",
