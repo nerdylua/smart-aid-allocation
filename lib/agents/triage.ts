@@ -42,11 +42,9 @@ const assessmentSchema = z.object({
   flagged_reason: z
     .string()
     .nullable()
-    .describe("Why this case is flagged, or null if not flagged"),
-  duplicate_case_id: z
-    .string()
-    .nullable()
-    .describe("ID of a potential duplicate case, or null"),
+    .describe(
+      "Why this case is flagged, or null if not flagged. If a potential duplicate was detected, include the duplicate case's UUID in this text."
+    ),
 });
 
 export type AssessmentOutput = z.infer<typeof assessmentSchema>;
@@ -239,7 +237,7 @@ Your job is to assess incoming cases and produce accurate priority scores.
 - If confidence < 0.6: flag with reason "Low confidence — field verification recommended"
 - If severity >= 9: flag with reason "Critical severity — requires immediate coordinator review"
 - If vulnerability >= 9: flag with reason "Extremely vulnerable population — requires coordinator review"
-- If potential duplicate found: flag with reason "Potential duplicate detected — manual review needed"
+- If potential duplicate found: flag with reason "Potential duplicate detected — manual review needed. Candidate: <duplicate_case_id>" (inline the UUID of the suspected duplicate inside flagged_reason).
 
 ## Important
 - Be specific in your rationale. Cite details from the case (age, needs, vulnerabilities).

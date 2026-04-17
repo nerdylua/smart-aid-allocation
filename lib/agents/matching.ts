@@ -30,63 +30,62 @@ const matchResultSchema = z.object({
 
 export type MatchResult = z.infer<typeof matchResultSchema>;
 
+type VolunteerRow = {
+  id: string;
+  name: string;
+  skills: string[] | null;
+  language: string | null;
+  availability: Record<string, unknown> | null;
+  staffing: string;
+  action: string;
+  lat: number | null;
+  lng: number | null;
+};
+
 const getCaseForMatching = tool({
   description:
-    "Fetch case details needed for volunteer matching: needs, location, language, person_info",
+    "Fetch case details needed for volunteer matching: title, needs, language, person_info, location label, and numeric lat/lng (null if the case has no coordinates).",
   inputSchema: z.object({
     caseId: z.string(),
   }),
   execute: async ({ caseId }) => {
     const supabase = createServerClient();
     const { data, error } = await supabase
-      .from("cases")
-      .select("id, title, needs, location, location_label, language, person_info")
-      .eq("id", caseId)
+      .rpc("get_case_for_matching", { p_case_id: caseId })
       .single();
     if (error) return { error: error.message };
+    if (!data) return { error: "Case not found" };
     return data;
   },
 });
 
 const getAvailableVolunteers = tool({
   description:
-    "Fetch available volunteers filtered by skills and/or language. Returns volunteers with their skills, language, and location.",
+    "Fetch available volunteers (role=volunteer, staffing in available|on_shift, action=idle). Each volunteer includes their skills, language code, and numeric lat/lng. Language is returned as data — use it for scoring language_match, not as a filter. If skills are provided, volunteers are sorted by how many of their skills match (case-insensitive substring).",
   inputSchema: z.object({
     skills: z
       .array(z.string())
       .optional()
-      .describe("Filter by any of these skills (OR match)"),
-    language: z
-      .string()
-      .optional()
-      .describe("Preferred language code (e.g. 'hi', 'mr', 'en')"),
+      .describe("Sort by any of these skills (OR match). No hard filter applied."),
   }),
-  execute: async ({ skills, language }) => {
+  execute: async ({ skills }) => {
     const supabase = createServerClient();
-    let query = supabase
-      .from("users")
-      .select("id, name, skills, language, location, availability, staffing, action")
-      .eq("role", "volunteer")
-      .in("staffing", ["available", "on_shift"])
-      .eq("action", "idle");
-
-    if (language) {
-      query = query.eq("language", language);
-    }
-
-    const { data, error } = await query.limit(20);
+    const { data, error } = await supabase.rpc(
+      "get_available_volunteers_for_matching"
+    );
     if (error) return { error: error.message };
 
-    // If skills filter provided, do client-side overlap check
-    const results = data ?? [];
+    const results = (data ?? []) as VolunteerRow[];
+
     if (skills && skills.length > 0) {
       const withSkillMatch = results.map((v) => ({
         ...v,
-        matching_skills: (v.skills as string[] ?? []).filter((s: string) =>
-          skills.some((needed) => s.toLowerCase().includes(needed.toLowerCase()))
+        matching_skills: (v.skills ?? []).filter((s) =>
+          skills.some((needed) =>
+            s.toLowerCase().includes(needed.toLowerCase())
+          )
         ),
       }));
-      // Sort by number of matching skills, but keep all
       withSkillMatch.sort(
         (a, b) => b.matching_skills.length - a.matching_skills.length
       );
@@ -145,26 +144,28 @@ export const matchingAgent = new ToolLoopAgent({
 Your job is to find the best-fit volunteers for a given case.
 
 ## Process
-1. Call getCaseForMatching to understand the case needs, location, and language.
-2. Call getAvailableVolunteers with relevant skill keywords extracted from the case needs.
-3. For promising candidates, call computeDistance to check proximity.
+1. Call getCaseForMatching to get case details. The result includes the case's numeric lat/lng (may be null).
+2. Call getAvailableVolunteers, passing relevant skill keywords extracted from the case needs. Every returned volunteer includes their own lat/lng and language.
+3. For promising candidates, call computeDistance using the case lat/lng and the volunteer lat/lng to compute proximity in km. Skip this call if either side lacks coordinates.
 4. Call checkExistingAssignments for top candidates to check workload.
 5. Rank and return the top 3 candidates.
 
 ## Matching Criteria (weighted)
 - **Skills match** (35%): Do the volunteer's skills align with case needs?
-- **Language match** (25%): Does the volunteer speak the case's language?
+- **Language match** (25%): Does volunteer.language equal the case's language? This is a PREFERENCE, not a hard filter. A strong match on the other criteria can outweigh a language mismatch.
 - **Proximity** (25%): How close is the volunteer to the case location?
 - **Availability** (15%): Is the volunteer not overloaded with existing assignments?
 
 ## Scoring
 - Compute a match_score (0-1) for each candidate based on the weighted criteria above.
+- Set language_match=true only when volunteer.language equals case.language.
+- Set distance_km from computeDistance, or null when coordinates are missing on either side.
 - Be specific in the rationale about why each volunteer was selected.
 - If fewer than 3 suitable volunteers are found, explain why in no_match_reason.
 
 ## Important
 - Never assign a volunteer who lacks critical skills for a safety-sensitive case.
-- Prefer volunteers who speak the beneficiary's language.
+- Do not exclude a volunteer solely because their language differs — reflect that in the score instead.
 - If no volunteers match at all, return an empty candidates array with a clear no_match_reason.`,
   tools: {
     getCaseForMatching,
