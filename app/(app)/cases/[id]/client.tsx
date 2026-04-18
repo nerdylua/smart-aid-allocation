@@ -120,7 +120,7 @@ export function CaseDetailClient({ caseData }: { caseData: any }) {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{caseData.title}</h2>

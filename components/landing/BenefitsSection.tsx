@@ -17,28 +17,28 @@ const BENEFITS: Benefit[] = [
     title: "AI-powered triage",
     description:
       "AI triage scores severity, vulnerability, confidence and freshness, surfacing urgent needs first while flagging critical or uncertain cases for coordinator review.",
-    image: "/assets/placeholder.svg",
+    image: "/landing/sahaya-triage.png",
   },
   {
     label: "SMART VOLUNTEER MATCHING",
     title: "Smart volunteer matching",
     description:
       "Automatically rank and match volunteers by skill overlap, language preference and geographic proximity, preventing overloading and ensuring the right person responds.",
-    image: "/assets/placeholder.svg",
+    image: "/landing/sahaya-matching.png",
   },
   {
     label: "MULTI-CHANNEL INTAKE",
     title: "Multi-channel intake",
     description:
       "Accept need signals from web forms, CSV batch imports and email, with location geocoding where available and duplicate checks during triage.",
-    image: "/assets/placeholder.svg",
+    image: "/landing/sahaya-cases.png",
   },
   {
     label: "EQUITY MONITORING",
     title: "Equity monitoring",
     description:
       "Built-in bias auditing tracks disparity by region, language and need type, helping teams spot inequity early and course-correct.",
-    image: "/assets/placeholder.svg",
+    image: "/landing/sahaya-dashboard.png",
   },
 ];
 
