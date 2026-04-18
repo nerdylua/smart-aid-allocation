@@ -278,7 +278,7 @@ function SpotlightFeature({
 
 export default function ProductsSection() {
   return (
-    <div id="capabilities" className="marketing-light-bg-container py-16 text-black">
+    <div className="marketing-light-bg-container py-16 text-black">
       <div className="marketing-container border-landing-dark-green-border flex flex-col gap-8 pb-1 sm:gap-10">
         <motion.div
           className="flex flex-col gap-4"
@@ -287,7 +287,10 @@ export default function ProductsSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="text-landing-green-text-dark mb-0 text-xs tracking-[1.2px] sm:mb-5">
+          <div
+            id="capabilities"
+            className="text-landing-green-text-dark mb-0 scroll-mt-28 text-xs tracking-[1.2px] md:scroll-mt-32 sm:mb-5"
+          >
             CAPABILITIES
           </div>
           <h2 className="marketing-h2">Everything your response team needs</h2>
@@ -317,10 +320,7 @@ export default function ProductsSection() {
         </div>
       </div>
 
-      <div
-        id="architecture"
-        className="marketing-container pt-13 flex flex-col gap-20 sm:flex-row sm:pt-16"
-      >
+      <div className="marketing-container pt-13 flex flex-col gap-20 sm:flex-row sm:pt-16">
         <motion.div
           className="flex flex-col gap-6 sm:w-1/3"
           initial={{ opacity: 0, y: 24 }}
@@ -328,7 +328,10 @@ export default function ProductsSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="text-landing-green-text-dark mb-0 text-xs tracking-[1.2px]">
+          <div
+            id="architecture"
+            className="text-landing-green-text-dark mb-0 scroll-mt-28 text-xs tracking-[1.2px] md:scroll-mt-32"
+          >
             ARCHITECTURE
           </div>
           <h2 className="marketing-h2">Built on a powerful foundation</h2>

@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 
 type NavLink = {
   label: string;
   href: string;
+  scrollMode?: "default" | "center";
 };
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Platform", href: "#capabilities" },
-  { label: "Features", href: "#features" },
+  { label: "Overview", href: "#features" },
+  { label: "Capabilities", href: "#capabilities" },
+  { label: "Architecture", href: "#architecture" },
   { label: "Use Cases", href: "#use-cases" },
-  { label: "Impact", href: "#impact" },
   { label: "Trust", href: "#security" },
-  { label: "About", href: "#about" },
 ];
 
 export default function Header() {
@@ -36,20 +36,59 @@ export default function Header() {
 
   const closeMenu = () => setIsMobileMenuOpen(false);
 
+  const handleHomeClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    closeMenu();
+
+    if (window.location.pathname !== "/") return;
+
+    event.preventDefault();
+    window.history.replaceState(null, "", "/");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleNavClick =
+    (link: NavLink) => (event: ReactMouseEvent<HTMLAnchorElement>) => {
+      if (!link.href.startsWith("#") || link.scrollMode !== "center") {
+        closeMenu();
+        return;
+      }
+
+      event.preventDefault();
+
+      const target = document.querySelector<HTMLElement>(link.href);
+      if (!target) {
+        closeMenu();
+        return;
+      }
+
+      const rect = target.getBoundingClientRect();
+      const centeredTop =
+        window.scrollY + rect.top - window.innerHeight / 2 + rect.height / 2;
+
+      window.history.pushState(null, "", link.href);
+      window.scrollTo({ top: Math.max(centeredTop, 0), behavior: "smooth" });
+      closeMenu();
+    };
+
   return (
     <div className="sticky top-0 z-40 pt-4 md:pt-6">
       <div className="marketing-container">
         <div className="relative mx-auto max-w-6xl">
           <nav className="bg-dark-gray relative grid grid-cols-[1fr_auto_1fr] items-center rounded-full p-2.5 shadow-lg transition-all duration-300">
             <div className="relative ml-0 flex justify-start">
-              <Link className="relative inline-flex items-center gap-2" href="/" onClick={closeMenu}>
+              <Link className="relative inline-flex items-center gap-2" href="/" onClick={handleHomeClick}>
                 <Logo />
                 <span className="text-light-green text-base font-semibold tracking-wide">Sahaya</span>
               </Link>
             </div>
-            <div className="hidden items-center justify-center gap-7 text-sm md:flex xl:gap-10">
+            <div className="hidden items-center justify-center gap-7 text-center text-sm md:flex xl:gap-10">
               {NAV_LINKS.map((link) => (
-                <a key={link.label} href={link.href} className="hover:text-c-green-100">
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="hover:text-c-green-100"
+                  onClick={handleNavClick(link)}
+                >
                   {link.label}
                 </a>
               ))}
@@ -135,7 +174,7 @@ export default function Header() {
                   key={link.label}
                   href={link.href}
                   className="text-light-green hover:text-c-green-100 hover:bg-white/4 rounded-2xl px-4 py-3 text-sm transition-colors"
-                  onClick={closeMenu}
+                  onClick={handleNavClick(link)}
                 >
                   {link.label}
                 </a>

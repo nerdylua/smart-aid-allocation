@@ -93,7 +93,7 @@ export default function TrustSection() {
   return (
     <>
       <div id="impact" />
-      <section id="security" className="mb-8 mx-2 lg:mx-9">
+      <section className="mb-8 mx-2 lg:mx-9">
         <div className="marketing-container">
         <div className="grid gap-5 md:grid-cols-12">
           <motion.div
@@ -103,7 +103,7 @@ export default function TrustSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="marketing-h3 mb-8 md:mb-14">
+            <h2 id="security" className="marketing-h3 mb-8 scroll-mt-28 md:mb-14 md:scroll-mt-32">
               <span className="text-c-green-100">Trust</span> and accountability
             </h2>
             <div className="hidden md:block">

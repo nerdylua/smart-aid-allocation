@@ -104,7 +104,7 @@ export default function BuiltMoments() {
   }, [scroll]);
 
   return (
-    <div id="use-cases" className="my-32 mx-2 lg:mx-9">
+    <div className="my-32 mx-2 lg:mx-9">
       <motion.div
         className="marketing-container mb-10"
         initial={{ opacity: 0, y: 24 }}
@@ -115,7 +115,7 @@ export default function BuiltMoments() {
         <div className="flex items-end gap-6">
           <div className="mr-auto">
             <p className="text-xs uppercase tracking-[1.2px] text-c-green-100 mb-3">What&apos;s Possible</p>
-            <h2 className="marketing-h3 text-light-green">Built for Moments That Matter</h2>
+            <h2 id="use-cases" className="marketing-h3 text-light-green scroll-mt-28 md:scroll-mt-32">Built for Moments That Matter</h2>
           </div>
           <div className="flex">
             <button

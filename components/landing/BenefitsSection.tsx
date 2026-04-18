@@ -77,7 +77,6 @@ export default function BenefitsSection() {
 
   return (
     <div
-      id="features"
       className="marketing-container mb-32 mt-16 grid w-full grid-cols-1 sm:mt-20 lg:my-28 lg:grid-cols-[16.66%_1fr] lg:gap-12"
     >
       {/* Left sidebar */}
@@ -109,7 +108,8 @@ export default function BenefitsSection() {
       {/* Heading */}
       <div className="row-1 col-2">
         <motion.div
-          className="mb-5 text-xs uppercase tracking-[1.2px]"
+          id="features"
+          className="mb-5 scroll-mt-28 text-xs uppercase tracking-[1.2px] md:scroll-mt-32"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
