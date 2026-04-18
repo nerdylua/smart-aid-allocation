@@ -152,7 +152,7 @@ const PRODUCTS: Product[] = [
   {
     title: "Incident Response",
     description:
-      "Group related cases under campaigns with target tracking, progress monitoring and coordinated multi-org response.",
+      "Group related cases under incidents with target tracking, progress monitoring and coordinated field response.",
     href: "/incidents",
     icon: <SandboxesIcon />,
   },
@@ -164,7 +164,8 @@ const PRODUCTS: Product[] = [
   },
   {
     title: "Volunteer Hub",
-    description: "Self-service portal for volunteers to browse matching cases, accept assignments and submit completion proof.",
+    description:
+      "Self-service portal for volunteers to browse eligible cases, express interest and coordinate assignment handoff.",
     href: "/volunteer-hub",
     icon: <NotebooksIcon />,
   },
@@ -211,19 +212,19 @@ const PLATFORM_FEATURES = [
   {
     title: "PostGIS-powered hotspots",
     description:
-      "Real geocoded demand clusters via Nominatim and PostGIS. See exactly where needs concentrate and deploy field teams to the right locations.",
+      "Geocoded demand mapping via Nominatim and PostGIS. Track where needs are emerging and plan response coverage with location context.",
     icon: <DatabaseIcon />,
   },
   {
     title: "Multi-channel fusion",
     description:
-      "Web forms, CSV batch imports from partner NGOs and email auto-ingestion, all feeding the same canonical triage pipeline with zero data silos.",
+      "Web forms, CSV partner imports and email intake all feed the same triage workflow, reducing manual copy-paste across tools.",
     icon: <PlugIcon />,
   },
   {
     title: "Realtime subscriptions",
     description:
-      "Supabase Realtime pushes every status change instantly to all open dashboards. When a volunteer accepts, coordinators see it immediately with no polling.",
+      "Supabase Realtime subscriptions refresh operational views as case and assignment updates happen, so teams can react quickly.",
     icon: <NetworkIcon />,
   },
 ];

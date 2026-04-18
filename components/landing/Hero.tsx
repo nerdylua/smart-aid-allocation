@@ -67,9 +67,9 @@ const HERO_GRID_STYLES: Record<number, React.CSSProperties> = {
 };
 
 const HERO_METRICS = [
-  { label: "Cases Triaged", value: "2.4k" },
-  { label: "Active Volunteers", value: "312" },
-  { label: "Closure Rate", value: "94%" },
+  { label: "Triage Status", value: "Live" },
+  { label: "Review Model", value: "Human-in-loop" },
+  { label: "Audit Trail", value: "Enabled" },
 ] as const;
 
 function HeroProductPreview() {
@@ -119,11 +119,11 @@ function HeroProductPreview() {
               </div>
               <div className="flex items-center gap-2 text-c-pale-green-80">
                 <span className="h-1.5 w-1.5 rounded-full bg-c-green-100" />
-                3 cases flagged for human review
+                critical and low-confidence cases flagged for review
               </div>
               <div className="flex items-center gap-2 text-c-pale-green-80">
                 <span className="h-1.5 w-1.5 rounded-full bg-c-green-100" />
-                12 volunteers matched by skill &amp; proximity
+                volunteer candidates ranked by skill, language and proximity
               </div>
               <div className="flex items-center gap-2 text-c-pale-green-80">
                 <span className="h-1.5 w-1.5 rounded-full bg-c-green-100" />
@@ -156,10 +156,10 @@ function HeroProductPreview() {
                     Response Volume
                   </p>
                   <p className="mt-1 text-sm text-light-green/75">
-                    cases resolved across all active incidents
+                    response activity across active incidents
                   </p>
                 </div>
-                <p className="text-lg font-semibold text-c-green-100">1.8k</p>
+                <p className="text-lg font-semibold text-c-green-100">Live</p>
               </div>
 
               <div className="mt-5 flex h-24 items-end gap-2">
@@ -186,19 +186,19 @@ function HeroProductPreview() {
 
               <div className="space-y-3">
                 {[
-                  { name: "Medical & Health", load: "92%" },
-                  { name: "Food & Shelter", load: "78%" },
-                  { name: "Elder & Child Care", load: "64%" },
+                  { name: "Medical & Health", level: "High", width: "78%" },
+                  { name: "Food & Shelter", level: "Moderate", width: "64%" },
+                  { name: "Elder & Child Care", level: "Rising", width: "52%" },
                 ].map((region) => (
                   <div key={region.name}>
                     <div className="mb-1 flex items-center justify-between text-sm text-light-green/75">
                       <span>{region.name}</span>
-                      <span>{region.load}</span>
+                      <span>{region.level}</span>
                     </div>
                     <div className="h-2 rounded-full bg-white/6">
                       <div
                         className="h-full rounded-full bg-[linear-gradient(90deg,#3f7b34,#7fee64)]"
-                        style={{ width: region.load }}
+                        style={{ width: region.width }}
                       />
                     </div>
                   </div>

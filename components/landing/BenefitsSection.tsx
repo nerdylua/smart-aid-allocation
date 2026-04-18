@@ -16,7 +16,7 @@ const BENEFITS: Benefit[] = [
     label: "AI-POWERED TRIAGE",
     title: "AI-powered triage",
     description:
-      "Three specialized agents score severity, vulnerability and freshness, surfacing the most urgent needs first while flagging uncertain cases for human review.",
+      "AI triage scores severity, vulnerability, confidence and freshness, surfacing urgent needs first while flagging critical or uncertain cases for coordinator review.",
     image: "/assets/placeholder.svg",
   },
   {
@@ -30,14 +30,14 @@ const BENEFITS: Benefit[] = [
     label: "MULTI-CHANNEL INTAKE",
     title: "Multi-channel intake",
     description:
-      "Accept need signals from web forms, CSV batch imports and email, all feeding a single canonical pipeline with auto-geocoding and duplicate detection.",
+      "Accept need signals from web forms, CSV batch imports and email, with location geocoding where available and duplicate checks during triage.",
     image: "/assets/placeholder.svg",
   },
   {
     label: "EQUITY MONITORING",
     title: "Equity monitoring",
     description:
-      "Built-in bias auditing measures disparity by region, language and need type, ensuring aid reaches every community fairly and verifiably.",
+      "Built-in bias auditing tracks disparity by region, language and need type, helping teams spot inequity early and course-correct.",
     image: "/assets/placeholder.svg",
   },
 ];

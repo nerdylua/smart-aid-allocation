@@ -12,7 +12,7 @@ const ITEMS: AccordionItem[] = [
   {
     title: "Role-based access & audit trail",
     content:
-      "Every action, from intake to closure, is logged with timestamps and actor identity. Row-level security isolates organizations and role-based controls govern coordinators, field workers and volunteers.",
+      "Core workflows write audit events with timestamps and actor metadata. The data model includes user roles and row-level security is enabled as a foundation for stricter production policies.",
   },
   {
     title: "Human-in-the-loop AI oversight",
@@ -27,7 +27,7 @@ const ITEMS: AccordionItem[] = [
   {
     title: "Data minimization & compliance",
     content:
-      "Only essential fields are collected. Compatible with OCHA Data Responsibility Guidelines. Google OAuth ensures secure authentication without managing passwords.",
+      "Case records focus on operational essentials, and authentication is handled through Supabase Auth with Google OAuth and email/password support.",
   },
 ];
 
