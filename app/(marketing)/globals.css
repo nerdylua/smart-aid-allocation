@@ -347,18 +347,25 @@
   }
 
   .benefit-asset-container {
-    height: 330px;
-    width: 560px;
+    height: 400px;
+    width: 640px;
   }
   @media (min-width: 640px) {
     .benefit-asset-container {
-      height: 500px;
+      height: 560px;
+      width: 720px;
     }
   }
   @media (min-width: 1024px) {
     .benefit-asset-container {
-      height: 330px;
-      width: 420px;
+      height: 360px;
+      width: 560px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .benefit-asset-container {
+      height: 380px;
+      width: 640px;
     }
   }
 

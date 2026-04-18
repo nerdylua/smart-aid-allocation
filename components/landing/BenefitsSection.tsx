@@ -162,7 +162,11 @@ export default function BenefitsSection() {
                 </p>
               </div>
               <div
-                className="benefit-asset-bg border-landing-medium-green-border relative z-10 flex w-full items-center justify-center border bg-cover bg-center lg:border-t-0 lg:py-30"
+                className={`benefit-asset-bg border-landing-medium-green-border relative z-10 flex w-full items-center justify-center border bg-cover bg-center lg:border-t-0 ${
+                  idx === BENEFITS.length - 1
+                    ? "lg:items-center lg:py-0"
+                    : "lg:items-start lg:pt-16"
+                }`}
               >
                 <div className="benefit-asset-container flex max-w-full overflow-hidden">
                   <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl px-4 py-6 lg:py-0 xl:px-0">
