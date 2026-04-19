@@ -139,12 +139,26 @@ function getToolIcon(name: string) {
 export function VoiceAgent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sessionRef = useRef<any>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const mountedRef = useRef(false);
   const startAttemptRef = useRef(0);
   const startAbortRef = useRef<AbortController | null>(null);
   const historyRef = useRef<unknown[]>([]);
   const streamingDeltasRef = useRef<Map<string, string>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const stopMediaStream = useCallback(() => {
+    const stream = mediaStreamRef.current;
+    if (!stream) return;
+    for (const track of stream.getTracks()) {
+      try {
+        track.stop();
+      } catch {
+        // ignore track stop errors
+      }
+    }
+    mediaStreamRef.current = null;
+  }, []);
 
   const [status, setStatus] = useState<Status>("idle");
   const [muted, setMuted] = useState(false);
@@ -174,8 +188,10 @@ export function VoiceAgent() {
         }
         sessionRef.current = null;
       }
+
+      stopMediaStream();
     };
-  }, []);
+  }, [stopMediaStream]);
 
   const rebuildTranscript = useCallback(() => {
     const lines: TranscriptLine[] = [];
@@ -226,10 +242,24 @@ export function VoiceAgent() {
       if (!token) throw new Error("No token returned from session endpoint");
       if (!isCurrentAttempt()) return;
 
-      const { RealtimeAgent, RealtimeSession } = await import(
-        "@openai/agents/realtime"
-      );
+      const { RealtimeAgent, RealtimeSession, OpenAIRealtimeWebRTC } =
+        await import("@openai/agents/realtime");
       if (!isCurrentAttempt()) return;
+
+      stopMediaStream();
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1,
+        },
+      });
+      if (!isCurrentAttempt()) {
+        for (const track of mediaStream.getTracks()) track.stop();
+        return;
+      }
+      mediaStreamRef.current = mediaStream;
 
       const agent = new RealtimeAgent({
         name: "Sahaya Coordinator",
@@ -237,12 +267,28 @@ export function VoiceAgent() {
         tools: allVoiceTools,
       });
 
+      const transport = new OpenAIRealtimeWebRTC({ mediaStream });
+
       session = new RealtimeSession(agent, {
+        transport,
         model: "gpt-realtime-mini",
+        config: {
+          audio: {
+            input: {
+              noiseReduction: { type: "far_field" },
+              turnDetection: {
+                type: "semantic_vad",
+                eagerness: "low",
+                interruptResponse: true,
+              },
+            },
+          },
+        },
       });
 
       if (!isCurrentAttempt()) {
         session.close();
+        stopMediaStream();
         return;
       }
 
@@ -371,6 +417,7 @@ export function VoiceAgent() {
       if (!isCurrentAttempt()) {
         session.close();
         if (sessionRef.current === session) sessionRef.current = null;
+        stopMediaStream();
         return;
       }
 
@@ -394,6 +441,7 @@ export function VoiceAgent() {
           }
           sessionRef.current = null;
         }
+        stopMediaStream();
         return;
       }
 
@@ -412,8 +460,10 @@ export function VoiceAgent() {
         }
         sessionRef.current = null;
       }
+
+      stopMediaStream();
     }
-  }, [rebuildTranscript]);
+  }, [rebuildTranscript, stopMediaStream]);
 
   const stop = useCallback(() => {
     startAttemptRef.current += 1;
@@ -429,10 +479,12 @@ export function VoiceAgent() {
       sessionRef.current = null;
     }
 
+    stopMediaStream();
+
     setStatus("idle");
     setMuted(false);
     setError(null);
-  }, []);
+  }, [stopMediaStream]);
 
   const toggleMute = useCallback(() => {
     if (!sessionRef.current) return;
