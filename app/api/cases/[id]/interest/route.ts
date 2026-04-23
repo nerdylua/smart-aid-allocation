@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAuthenticatedUser } from "@/lib/supabase/api-auth";
 
 export async function POST(
   request: NextRequest,
@@ -8,10 +9,26 @@ export async function POST(
   const { id: caseId } = await params;
   const body = await request.json();
   const supabase = createServerClient();
+  const authUser = await getAuthenticatedUser(request).catch(() => null);
 
-  const volunteerId = body.volunteer_id;
+  let volunteerId = body.volunteer_id as string | undefined;
+
+  if (!volunteerId && authUser?.email) {
+    const { data: volunteer } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", authUser.email)
+      .eq("role", "volunteer")
+      .maybeSingle();
+
+    volunteerId = volunteer?.id;
+  }
+
   if (!volunteerId) {
-    return NextResponse.json({ error: "volunteer_id is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "A volunteer identity is required to express interest" },
+      { status: 400 }
+    );
   }
 
   // Check if already has a pending interest/assignment for this case
@@ -49,7 +66,11 @@ export async function POST(
     entity_type: "assignment",
     entity_id: data.id,
     action: "volunteer_interest",
-    metadata: { case_id: caseId, volunteer_id: volunteerId },
+    metadata: {
+      case_id: caseId,
+      volunteer_id: volunteerId,
+      source: authUser ? "authenticated_volunteer_hub" : "selected_persona",
+    },
   });
 
   // Case note

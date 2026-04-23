@@ -173,7 +173,6 @@ alter table verifications enable row level security;
 alter table feedback enable row level security;
 alter table audit_events enable row level security;
 
--- For hackathon demo: permissive policies (service role bypasses RLS)
 -- In production these would be scoped to org_id via JWT claims
 
 create policy "Allow all for authenticated" on organizations for all using (true);

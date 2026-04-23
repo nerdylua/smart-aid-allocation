@@ -33,6 +33,7 @@ const NEED_TYPES = [
 const LANGUAGES = [
   { value: "en", label: "English" },
   { value: "hi", label: "Hindi" },
+  { value: "kn", label: "Kannada" },
   { value: "mr", label: "Marathi" },
   { value: "ur", label: "Urdu" },
   { value: "ta", label: "Tamil" },
@@ -41,28 +42,127 @@ const LANGUAGES = [
   { value: "ml", label: "Malayalam" },
 ];
 
+const BATCH_SAMPLE = `title,description,location_label,language,needs,person_name,contact,family_size
+Flooded home needs dry ration,Family displaced after overnight rain near low-lying lane,Shivajinagar,en,food|shelter,Asha,9845000001,5
+Dialysis transport needed,Elderly resident needs urgent transport to hospital by afternoon,Whitefield,en,medical|transport,Ramesh,9845000002,2
+Water shortage in relief cluster,Community kitchen reports shortage of drinking water,Electronic City,kn,water|supplies,Farida,9845000003,12`;
+
+type BatchImportResponse = {
+  created: number;
+  geocoded: number;
+  cases: { id: string; title: string }[];
+};
+
+function splitCsvLine(line: string) {
+  const values: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    const next = line[index + 1];
+
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        current += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      values.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function parseBatchCsv(csvText: string) {
+  const lines = csvText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) {
+    return [];
+  }
+
+  const headers = splitCsvLine(lines[0]).map((header) => header.toLowerCase());
+
+  return lines.slice(1).map((line) => {
+    const values = splitCsvLine(line);
+    return headers.reduce<Record<string, string>>((row, header, index) => {
+      row[header] = values[index] ?? "";
+      return row;
+    }, {});
+  });
+}
+
+function buildBatchCases(csvText: string) {
+  return parseBatchCsv(csvText)
+    .map((row) => ({
+      title: row.title,
+      description: row.description || undefined,
+      location_label: row.location_label || undefined,
+      language: row.language || "en",
+      needs: (row.needs || "")
+        .split("|")
+        .map((need) => need.trim())
+        .filter(Boolean)
+        .map((type) => ({ type })),
+      person_info: {
+        name: row.person_name || undefined,
+        contact: row.contact || undefined,
+        family_size: row.family_size ? Number(row.family_size) : undefined,
+      },
+    }))
+    .filter((row) => row.title);
+}
+
 export default function IntakePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [batchLoading, setBatchLoading] = useState(false);
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState("en");
   const [incidentId, setIncidentId] = useState("");
-  const [incidents, setIncidents] = useState<{ id: string; name: string }[]>([]);
+  const [batchCsv, setBatchCsv] = useState("");
+  const [batchResult, setBatchResult] = useState<BatchImportResponse | null>(
+    null
+  );
+  const [incidents, setIncidents] = useState<{ id: string; name: string }[]>(
+    []
+  );
 
   useEffect(() => {
     fetch("/api/incidents")
       .then((r) => r.json())
-      .then((data) => setIncidents(data.filter((i: { status: string }) => i.status === "active" || i.status === "monitoring")))
+      .then((data) =>
+        setIncidents(
+          data.filter(
+            (incident: { status: string }) =>
+              incident.status === "active" || incident.status === "monitoring"
+          )
+        )
+      )
       .catch(() => {});
   }, []);
 
   function applyTemplate(templateId: string) {
-    const template = caseTemplates.find((t) => t.id === templateId);
+    const template = caseTemplates.find((item) => item.id === templateId);
     if (!template) return;
     setTitle(template.defaults.title);
     if (template.defaults.needs) {
-      setSelectedNeeds(template.defaults.needs.map((n) => n.type));
+      setSelectedNeeds(template.defaults.needs.map((need) => need.type));
     }
     if ("language" in template.defaults && template.defaults.language) {
       setLanguage(template.defaults.language);
@@ -106,15 +206,42 @@ export default function IntakePage() {
     if (res.ok) {
       const data = await res.json();
       router.push(`/cases/${data.id}`);
-    } else {
-      setLoading(false);
-      alert("Failed to submit case. Please try again.");
+      return;
     }
+
+    setLoading(false);
+    alert("Failed to submit case. Please try again.");
+  }
+
+  async function handleBatchImport() {
+    const cases = buildBatchCases(batchCsv);
+    if (cases.length === 0) {
+      alert("Please paste a CSV with at least one valid row.");
+      return;
+    }
+
+    setBatchLoading(true);
+    setBatchResult(null);
+
+    const res = await fetch("/api/intakes/batch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cases }),
+    });
+
+    if (res.ok) {
+      setBatchResult((await res.json()) as BatchImportResponse);
+      setBatchLoading(false);
+      return;
+    }
+
+    setBatchLoading(false);
+    alert("Batch import failed. Check the CSV format and try again.");
   }
 
   function toggleNeed(type: string) {
     setSelectedNeeds((prev) =>
-      prev.includes(type) ? prev.filter((n) => n !== type) : [...prev, type]
+      prev.includes(type) ? prev.filter((need) => need !== type) : [...prev, type]
     );
   }
 
@@ -127,24 +254,78 @@ export default function IntakePage() {
         </p>
       </div>
 
-      {/* Quick Templates */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Quick Templates</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {caseTemplates.map((t) => (
+            {caseTemplates.map((template) => (
               <button
-                key={t.id}
+                key={template.id}
                 type="button"
-                onClick={() => applyTemplate(t.id)}
-                className="px-3 py-1.5 rounded-full text-sm border bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                onClick={() => applyTemplate(template.id)}
+                className="rounded-full border bg-muted px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
               >
-                {t.label}
+                {template.label}
               </button>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Batch Intake</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Paste CSV rows to register multiple Bengaluru cases at once. Imported
+              locations are geocoded so they show up immediately on the hotspot map.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Expected columns: title, description, location_label, language,
+              needs, person_name, contact, family_size
+            </p>
+          </div>
+          <Textarea
+            value={batchCsv}
+            onChange={(event) => setBatchCsv(event.target.value)}
+            rows={7}
+            placeholder="Paste CSV rows here..."
+          />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setBatchCsv(BATCH_SAMPLE)}
+            >
+              Fill Example
+            </Button>
+            <Button
+              type="button"
+              onClick={handleBatchImport}
+              disabled={batchLoading}
+            >
+              {batchLoading ? "Importing..." : "Import Batch"}
+            </Button>
+            {batchResult?.cases?.[0] && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push(`/cases/${batchResult.cases[0].id}`)}
+              >
+                Open First Imported Case
+              </Button>
+            )}
+          </div>
+          {batchResult && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+              Imported {batchResult.created} cases. Geocoded {batchResult.geocoded}{" "}
+              of them for the Bengaluru command map.
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -162,7 +343,7 @@ export default function IntakePage() {
                 placeholder="Brief description of the need"
                 required
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(event) => setTitle(event.target.value)}
               />
             </div>
             <div>
@@ -185,14 +366,20 @@ export default function IntakePage() {
               </div>
               <div>
                 <Label htmlFor="language">Language</Label>
-                <Select name="language" value={language} onValueChange={(v) => { if (v) setLanguage(v); }}>
+                <Select
+                  name="language"
+                  value={language}
+                  onValueChange={(value) => {
+                    if (value) setLanguage(value);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {LANGUAGES.map((l) => (
-                      <SelectItem key={l.value} value={l.value}>
-                        {l.label}
+                    {LANGUAGES.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -202,14 +389,17 @@ export default function IntakePage() {
             {incidents.length > 0 && (
               <div>
                 <Label htmlFor="incident">Link to Incident (optional)</Label>
-                <Select value={incidentId} onValueChange={(v) => setIncidentId(v ?? "")}>
+                <Select
+                  value={incidentId}
+                  onValueChange={(value) => setIncidentId(value ?? "")}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
                   <SelectContent>
-                    {incidents.map((i) => (
-                      <SelectItem key={i.id} value={i.id}>
-                        {i.name}
+                    {incidents.map((incident) => (
+                      <SelectItem key={incident.id} value={incident.id}>
+                        {incident.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -230,10 +420,10 @@ export default function IntakePage() {
                   key={type}
                   type="button"
                   onClick={() => toggleNeed(type)}
-                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${
+                  className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                     selectedNeeds.includes(type)
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-muted text-muted-foreground border-transparent hover:border-primary/50"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-transparent bg-muted text-muted-foreground hover:border-primary/50"
                   }`}
                 >
                   {type}
@@ -243,7 +433,7 @@ export default function IntakePage() {
             {selectedNeeds.map((type) => (
               <div key={type}>
                 <Label htmlFor={`need_detail_${type}`}>
-                  {type} — details (optional)
+                  {type} - details (optional)
                 </Label>
                 <Input
                   id={`need_detail_${type}`}

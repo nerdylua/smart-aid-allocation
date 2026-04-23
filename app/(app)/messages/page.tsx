@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Message {
   id: string;
@@ -15,9 +18,17 @@ interface Message {
   created_at: string;
 }
 
+const DEMO_EMAIL = {
+  from: "field.coordinator@bengaluru-relief.org",
+  subject: "Urgent water request from Marathahalli shelter cluster",
+  body: "Community volunteer reports 18 families near Marathahalli bridge without clean drinking water since last night. Two elderly residents need immediate support and the shelter coordinator can be reached on 9845000012.",
+};
+
 export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [simulating, setSimulating] = useState(false);
+  const [emailForm, setEmailForm] = useState(DEMO_EMAIL);
 
   const fetchMessages = useCallback(async () => {
     const res = await fetch("/api/messages");
@@ -46,10 +57,30 @@ export default function MessagesPage() {
     void fetchMessages();
   }
 
-  if (loading) return <div className="text-muted-foreground">Loading messages...</div>;
+  async function simulateInboundEmail() {
+    setSimulating(true);
+    const res = await fetch("/api/intake/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(emailForm),
+    });
 
-  const pending = messages.filter((m) => m.status === "pending");
-  const processed = messages.filter((m) => m.status !== "pending");
+    setSimulating(false);
+
+    if (!res.ok) {
+      alert("Unable to simulate inbound email right now.");
+      return;
+    }
+
+    void fetchMessages();
+  }
+
+  if (loading) {
+    return <div className="text-muted-foreground">Loading messages...</div>;
+  }
+
+  const pending = messages.filter((message) => message.status === "pending");
+  const processed = messages.filter((message) => message.status !== "pending");
 
   return (
     <div className="space-y-6">
@@ -60,33 +91,111 @@ export default function MessagesPage() {
         </p>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Simulate Inbound Email</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Use this demo console to create a fresh intake message, review it in
+            the inbox, and then promote it into a triaged case live on stage.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="from">From</Label>
+              <Input
+                id="from"
+                value={emailForm.from}
+                onChange={(event) =>
+                  setEmailForm((current) => ({
+                    ...current,
+                    from: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="subject">Subject</Label>
+              <Input
+                id="subject"
+                value={emailForm.subject}
+                onChange={(event) =>
+                  setEmailForm((current) => ({
+                    ...current,
+                    subject: event.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="body">Body</Label>
+            <Textarea
+              id="body"
+              rows={5}
+              value={emailForm.body}
+              onChange={(event) =>
+                setEmailForm((current) => ({
+                  ...current,
+                  body: event.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setEmailForm(DEMO_EMAIL)}
+            >
+              Reset Example
+            </Button>
+            <Button
+              type="button"
+              onClick={simulateInboundEmail}
+              disabled={simulating}
+            >
+              {simulating ? "Queuing..." : "Send to Inbox"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {pending.length === 0 && processed.length === 0 && (
-        <p className="text-sm text-muted-foreground">No messages yet. Send an email to the intake endpoint to start receiving messages.</p>
+        <p className="text-sm text-muted-foreground">
+          No messages yet. Use the simulator above to generate an intake message.
+        </p>
       )}
 
       {pending.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-lg font-semibold">Pending ({pending.length})</h3>
-          {pending.map((m) => (
-            <Card key={m.id}>
+          {pending.map((message) => (
+            <Card key={message.id}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-mono">{m.sender}</CardTitle>
+                  <CardTitle className="text-sm font-mono">
+                    {message.sender}
+                  </CardTitle>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{m.channel}</Badge>
+                    <Badge variant="secondary">{message.channel}</Badge>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(m.created_at).toLocaleString()}
+                      {new Date(message.created_at).toLocaleString()}
                     </span>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm mb-3">{m.body}</p>
+                <p className="mb-3 text-sm">{message.body}</p>
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => promote(m.id)}>
+                  <Button size="sm" onClick={() => promote(message.id)}>
                     Promote to Case
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => dismiss(m.id)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => dismiss(message.id)}
+                  >
                     Dismiss
                   </Button>
                 </div>
@@ -99,19 +208,27 @@ export default function MessagesPage() {
       {processed.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">Processed ({processed.length})</h3>
-          {processed.map((m) => (
-            <div key={m.id} className="flex items-center justify-between p-3 border rounded-md">
-              <div className="flex-1 min-w-0">
-                <span className="text-sm font-mono mr-2">{m.sender}</span>
-                <span className="text-sm text-muted-foreground truncate">
-                  {m.body.slice(0, 60)}{m.body.length > 60 ? "..." : ""}
+          {processed.map((message) => (
+            <div
+              key={message.id}
+              className="flex items-center justify-between rounded-md border p-3"
+            >
+              <div className="min-w-0 flex-1">
+                <span className="mr-2 text-sm font-mono">{message.sender}</span>
+                <span className="truncate text-sm text-muted-foreground">
+                  {message.body.slice(0, 60)}
+                  {message.body.length > 60 ? "..." : ""}
                 </span>
               </div>
               <Badge
                 variant="secondary"
-                className={m.status === "promoted" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                className={
+                  message.status === "promoted"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-gray-100 text-gray-800"
+                }
               >
-                {m.status}
+                {message.status}
               </Badge>
             </div>
           ))}

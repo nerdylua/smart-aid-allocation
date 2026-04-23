@@ -3,7 +3,7 @@
 // and can use `supabase gen types typescript`
 
 export type UserRole = "admin" | "coordinator" | "field_worker" | "volunteer";
-export type CaseSource = "form" | "csv" | "api" | "helpline" | "sms" | "email";
+export type CaseSource = "form" | "csv" | "api" | "helpline" | "sms" | "email" | "voice";
 export type MessageStatus = "pending" | "promoted" | "dismissed";
 export type CaseStatus =
   | "new"

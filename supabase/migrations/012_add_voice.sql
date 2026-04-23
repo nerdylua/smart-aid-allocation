@@ -1,0 +1,1 @@
+alter type case_source add value if not exists 'voice';
