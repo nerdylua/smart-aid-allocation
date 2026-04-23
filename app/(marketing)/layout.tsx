@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { Space_Grotesk } from "next/font/google";
 import SmoothScroll from "@/components/landing/SmoothScroll";
-import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -22,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`min-h-full antialiased ${GeistSans.variable} ${spaceGrotesk.variable}`}>
+    <div className={`marketing-root min-h-full antialiased ${GeistSans.variable} ${spaceGrotesk.variable}`}>
       <SmoothScroll />
       {children}
     </div>
