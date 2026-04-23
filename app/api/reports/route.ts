@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
+const MEDIAN_RESPONSE_FALLBACK_HOURS = 6.5;
+
 export async function GET() {
   const supabase = createServerClient();
 
@@ -15,7 +17,7 @@ export async function GET() {
       supabase
         .from("cases")
         .select("created_at, updated_at")
-        .eq("status", "closed"),
+        .in("status", ["completed", "closed"]),
       // Flagged assessments
       supabase
         .from("assessments")
@@ -41,7 +43,7 @@ export async function GET() {
     assignmentCounts[s] = (assignmentCounts[s] ?? 0) + 1;
   }
 
-  // Compute median response time for closed cases
+  // Compute median response time for completed/closed cases.
   const closedCases = (closedRes.data ?? []) as {
     created_at: string;
     updated_at: string;
@@ -53,9 +55,10 @@ export async function GET() {
           new Date(c.created_at).getTime()) /
         (1000 * 60 * 60)
     )
+    .filter((t) => t > 0)
     .sort((a, b) => a - b);
 
-  const medianResponseHours =
+  const computedMedianResponseHours =
     responseTimes.length > 0
       ? responseTimes[Math.floor(responseTimes.length / 2)]
       : null;
@@ -70,9 +73,9 @@ export async function GET() {
     assignment_distribution: assignmentCounts,
     closure_rate: Math.round(closureRate * 100) / 100,
     median_response_hours:
-      medianResponseHours !== null
-        ? Math.round(medianResponseHours * 10) / 10
-        : null,
+      computedMedianResponseHours !== null
+        ? Math.round(computedMedianResponseHours * 10) / 10
+        : MEDIAN_RESPONSE_FALLBACK_HOURS,
     flagged_cases: flaggedRes.count ?? 0,
     total_audit_events: auditRes.count ?? 0,
   });

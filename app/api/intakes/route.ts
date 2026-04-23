@@ -34,9 +34,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Geocode location if label provided but no coords
+  // Geocode location if label provided but no coords.
+  // Add city context for better hit accuracy on short neighborhood-only inputs.
   if (body.location_label && !body.location_coords) {
-    const coords = await geocode(body.location_label).catch(() => null);
+    const locationLabel = String(body.location_label).trim();
+    const contextualQuery = /bengaluru|bangalore/i.test(locationLabel)
+      ? locationLabel
+      : `${locationLabel}, Bengaluru, Karnataka, India`;
+
+    const coords =
+      (await geocode(contextualQuery).catch(() => null)) ??
+      (await geocode(locationLabel).catch(() => null));
+
     if (coords) {
       await supabase
         .from("cases")
