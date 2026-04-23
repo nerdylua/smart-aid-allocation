@@ -36,8 +36,23 @@ export async function POST(request: NextRequest) {
   }
 
   const data = await response.json();
+  const token =
+    typeof data?.value === "string"
+      ? data.value
+      : typeof data?.client_secret?.value === "string"
+        ? data.client_secret.value
+        : null;
+  const expiresAt =
+    typeof data?.expires_at === "number"
+      ? data.expires_at
+      : typeof data?.client_secret?.expires_at === "number"
+        ? data.client_secret.expires_at
+        : null;
 
-  if (!data.client_secret?.value) {
+  if (!token) {
+    console.error("Unexpected realtime client secret response shape", {
+      keys: data && typeof data === "object" ? Object.keys(data) : [],
+    });
     return NextResponse.json(
       { error: "No client secret returned from OpenAI" },
       { status: 502 },
@@ -45,7 +60,7 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({
-    token: data.client_secret.value,
-    expires_at: data.client_secret.expires_at,
+    token,
+    expires_at: expiresAt,
   });
 }
