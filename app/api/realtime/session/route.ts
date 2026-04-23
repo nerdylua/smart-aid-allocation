@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
           model: "gpt-realtime-mini",
         },
       }),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -37,8 +37,15 @@ export async function POST(request: NextRequest) {
 
   const data = await response.json();
 
+  if (!data.client_secret?.value) {
+    return NextResponse.json(
+      { error: "No client secret returned from OpenAI" },
+      { status: 502 },
+    );
+  }
+
   return NextResponse.json({
-    token: data.value,
-    expires_at: data.expires_at,
+    token: data.client_secret.value,
+    expires_at: data.client_secret.expires_at,
   });
 }

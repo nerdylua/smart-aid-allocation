@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAuthenticatedUser } from "@/lib/supabase/api-auth";
 import { promoteMessageToCase } from "@/lib/messages/promote";
 
 export async function POST(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const user = await getAuthenticatedUser(request);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   const supabase = createServerClient();
 
@@ -22,7 +28,7 @@ export async function POST(
   if (message.promoted_case_id) {
     return NextResponse.json(
       { case_id: message.promoted_case_id, already_promoted: true },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
@@ -43,7 +49,7 @@ export async function POST(
 
     return NextResponse.json(
       { case_id: result.caseId, already_promoted: result.alreadyPromoted },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (promotionError) {
     return NextResponse.json(
@@ -53,7 +59,7 @@ export async function POST(
             ? promotionError.message
             : "Failed to promote message",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

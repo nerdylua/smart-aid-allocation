@@ -13,22 +13,29 @@ export default async function DashboardPage() {
   const supabase = createServerClient();
 
   // Parallel data fetches — all via Supabase server client (no self-fetch)
-  const [casesRes, flaggedRes, incidentsRes] = await Promise.all([
-    supabase
-      .from("cases")
-      .select("id, title, status, location_label, location, language, created_at, assessments(priority_score, severity, is_flagged)")
-      .order("created_at", { ascending: false })
-      .limit(50),
-    supabase
-      .from("assessments")
-      .select("id", { count: "exact", head: true })
-      .eq("is_flagged", true),
-    supabase
-      .from("incidents")
-      .select("id, name, status, type")
-      .in("status", ["active", "monitoring"])
-      .limit(5),
-  ]);
+  const [casesRes, flaggedRes, incidentsRes, closedTimingRes] =
+    await Promise.all([
+      supabase
+        .from("cases")
+        .select(
+          "id, title, status, location_label, location, language, created_at, assessments(priority_score, severity, is_flagged)",
+        )
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabase
+        .from("assessments")
+        .select("id", { count: "exact", head: true })
+        .eq("is_flagged", true),
+      supabase
+        .from("incidents")
+        .select("id, name, status, type")
+        .in("status", ["active", "monitoring"])
+        .limit(5),
+      supabase
+        .from("cases")
+        .select("created_at, updated_at")
+        .eq("status", "closed"),
+    ]);
 
   const cases = (casesRes.data ?? []) as Array<{
     id: string;
@@ -38,7 +45,11 @@ export default async function DashboardPage() {
     location: unknown;
     language: string;
     created_at: string;
-    assessments: { priority_score: number; severity: number; is_flagged: boolean }[];
+    assessments: {
+      priority_score: number;
+      severity: number;
+      is_flagged: boolean;
+    }[];
   }>;
 
   // Compute KPIs directly from case data
@@ -49,10 +60,29 @@ export default async function DashboardPage() {
   const closedCount = statusCounts["closed"] ?? 0;
   const closureRate = cases.length > 0 ? closedCount / cases.length : 0;
 
+  // Compute median response time from all closed cases
+  const closedCasesForTiming = (closedTimingRes.data ?? []) as {
+    created_at: string;
+    updated_at: string;
+  }[];
+  const responseTimes = closedCasesForTiming
+    .map(
+      (c) =>
+        (new Date(c.updated_at).getTime() - new Date(c.created_at).getTime()) /
+        (1000 * 60 * 60),
+    )
+    .filter((t) => t > 0)
+    .sort((a, b) => a - b);
+  const medianResponseHours =
+    responseTimes.length > 0
+      ? Math.round(responseTimes[Math.floor(responseTimes.length / 2)] * 10) /
+        10
+      : null;
+
   const kpiData = {
     total_cases: cases.length,
     closure_rate: Math.round(closureRate * 100) / 100,
-    median_response_hours: null as number | null,
+    median_response_hours: medianResponseHours,
     flagged_cases: flaggedRes.count ?? 0,
     status_distribution: statusCounts,
   };
@@ -71,8 +101,17 @@ export default async function DashboardPage() {
 
       <div>
         <h3 className="text-lg font-semibold mb-3">Hotspot Map</h3>
-        <Suspense fallback={<div className="h-[440px] border rounded-lg flex items-center justify-center text-muted-foreground">Loading map...</div>}>
-          <HotspotMap cases={cases} heightClassName="h-[400px] md:h-[460px] xl:h-[500px]" />
+        <Suspense
+          fallback={
+            <div className="h-[440px] border rounded-lg flex items-center justify-center text-muted-foreground">
+              Loading map...
+            </div>
+          }
+        >
+          <HotspotMap
+            cases={cases}
+            heightClassName="h-[400px] md:h-[460px] xl:h-[500px]"
+          />
         </Suspense>
       </div>
 
@@ -88,12 +127,25 @@ export default async function DashboardPage() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Active Incidents</h3>
             <div className="space-y-3">
-              {(incidentsRes.data ?? []).map((i: { id: string; name: string; status: string; type: string | null }) => (
-                <Link key={i.id} href={`/incidents/${i.id}`} className="block p-3 border rounded-md hover:bg-muted/50">
-                  <div className="font-medium text-sm">{i.name}</div>
-                  <div className="text-xs text-muted-foreground">{i.type ?? "incident"} &middot; {i.status}</div>
-                </Link>
-              ))}
+              {(incidentsRes.data ?? []).map(
+                (i: {
+                  id: string;
+                  name: string;
+                  status: string;
+                  type: string | null;
+                }) => (
+                  <Link
+                    key={i.id}
+                    href={`/incidents/${i.id}`}
+                    className="block p-3 border rounded-md hover:bg-muted/50"
+                  >
+                    <div className="font-medium text-sm">{i.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {i.type ?? "incident"} &middot; {i.status}
+                    </div>
+                  </Link>
+                ),
+              )}
             </div>
           </div>
         ) : (
