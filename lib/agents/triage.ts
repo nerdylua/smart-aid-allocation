@@ -1,7 +1,7 @@
 import { ToolLoopAgent, tool, Output } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAgentModel } from "@/lib/agents/model";
 
 // Schema for the structured assessment output
 const assessmentSchema = z.object({
@@ -215,7 +215,7 @@ const saveAssessment = tool({
 
 // The Triage Agent
 export const triageAgent = new ToolLoopAgent({
-  model: openai("gpt-5.4-mini"),
+  model: getAgentModel(),
   instructions: `You are a humanitarian case triage specialist working for an NGO coordination platform.
 
 Your job is to assess incoming cases and produce accurate priority scores.

@@ -1,7 +1,7 @@
 import { ToolLoopAgent, tool, Output } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAgentModel } from "@/lib/agents/model";
 
 const matchResultSchema = z.object({
   candidates: z.array(
@@ -138,7 +138,7 @@ const checkExistingAssignments = tool({
 });
 
 export const matchingAgent = new ToolLoopAgent({
-  model: openai("gpt-5.4-mini"),
+  model: getAgentModel(),
   instructions: `You are a volunteer matching specialist for a humanitarian coordination platform.
 
 Your job is to find the best-fit volunteers for a given case.

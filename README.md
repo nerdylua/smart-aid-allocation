@@ -15,7 +15,7 @@ Sahaya is an AI-assisted coordination platform for community aid operations. It 
 - Language: TypeScript + React 19
 - Database: Supabase Postgres + PostGIS
 - Auth: Supabase Auth (Google OAuth + email/password client flow)
-- AI: Vercel AI SDK `ToolLoopAgent` + OpenAI model provider
+- AI: Vercel AI SDK `ToolLoopAgent` with switchable Gemini or Openai providers
 - UI: Tailwind CSS v4 + shadcn/ui
 - Maps: Leaflet / React Leaflet + OpenStreetMap + Nominatim geocoding
 
@@ -113,6 +113,8 @@ intake (form/csv/email/messages)
 	- Applies severity-based SLA rules.
 	- Creates assignment or escalates when needed.
 
+The workflow agents above share a provider-aware model resolver. Set `MODEL=openai` or `MODEL=gemini` in your environment to choose which provider powers triage, matching, and dispatch.
+
 ## Authentication and Access Control
 
 - Public entry points: `/`, `/login`, `/auth/*`, and `/api/*` through proxy allow-list.
@@ -163,7 +165,11 @@ Open `http://localhost:3000`.
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | Yes | Supabase anon/publishable key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Server-side admin operations |
-| `OPENAI_API_KEY` | Yes | AI agent model access |
+| `MODEL` | No | Workflow agent provider selector: `openai` (default) or `gemini` |
+| `OPENAI_API_KEY` | Required when `MODEL=openai`; also needed for the OpenAI realtime voice session route | OpenAI API access |
+| `OPENAI_MODEL` | No | Override for the OpenAI workflow-agent model. Defaults to `gpt-5.4-mini` |
+| `GEMINI_API_KEY` | Required when `MODEL=gemini` | Gemini API access for workflow agents |
+| `GEMINI_MODEL` | No | Override for the Gemini workflow-agent model. Defaults to `gemini-2.5-flash` |
 | `RESEND_API_KEY` | No | Email intake confirmation sending |
 | `RESEND_FROM_EMAIL` | No | Sender identity for Resend |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | No | Optional Google client identifier |

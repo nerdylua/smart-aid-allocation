@@ -1,7 +1,7 @@
 import { ToolLoopAgent, tool, Output } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { createServerClient } from "@/lib/supabase/server";
+import { getAgentModel } from "@/lib/agents/model";
 
 const dispatchResultSchema = z.object({
   assignment_id: z.string().nullable().describe("ID of created assignment, or null if escalated"),
@@ -154,7 +154,7 @@ const logAuditEvent = tool({
 });
 
 export const dispatchAgent = new ToolLoopAgent({
-  model: openai("gpt-5.4-mini"),
+  model: getAgentModel(),
   instructions: `You are a dispatch coordinator for a humanitarian response platform.
 
 Your job is to create volunteer assignments for triaged cases, or escalate cases that cannot be dispatched.
