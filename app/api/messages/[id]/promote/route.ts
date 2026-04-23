@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { getAuthenticatedUser } from "@/lib/supabase/api-auth";
 import { promoteMessageToCase } from "@/lib/messages/promote";
+import { sendCaseConfirmationEmail } from "@/lib/messages/confirmation-email";
 
 export async function POST(
   request: NextRequest,
@@ -46,6 +47,12 @@ export async function POST(
       },
       authorName: "Message Inbox",
     });
+
+    await sendCaseConfirmationEmail(message.sender, result.caseId).catch(
+      (err) => {
+        console.error("Failed to send confirmation email:", err);
+      },
+    );
 
     return NextResponse.json(
       { case_id: result.caseId, already_promoted: result.alreadyPromoted },
