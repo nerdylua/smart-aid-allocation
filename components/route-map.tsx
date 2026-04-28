@@ -12,21 +12,34 @@ export interface RouteStop {
 }
 
 const locationCoordsFallback: Record<string, [number, number]> = {
-  "Shivajinagar, Bengaluru": [12.9841, 77.6053],
-  "Koramangala, Bengaluru": [12.9352, 77.6245],
-  "Indiranagar, Bengaluru": [12.9719, 77.6412],
-  "Electronic City, Bengaluru": [12.8456, 77.6603],
-  "Yeshwanthpur, Bengaluru": [13.028, 77.54],
-  "Whitefield, Bengaluru": [12.9698, 77.75],
-  "HSR Layout, Bengaluru": [12.9082, 77.6476],
-  "Marathahalli, Bengaluru": [12.9569, 77.7011],
-  "Yelahanka, Bengaluru": [13.1007, 77.5963],
-  "Hoskote, Bengaluru Metro": [13.0707, 77.7984],
-  "Bommanahalli, Bengaluru": [12.8995, 77.622],
-  "Malleshwaram, Bengaluru": [13.006, 77.57],
-  "Jayanagar, Bengaluru": [12.925, 77.5938],
-  "KR Puram, Bengaluru": [13.0055, 77.7],
+  shivajinagar: [12.9841, 77.6053],
+  koramangala: [12.9352, 77.6245],
+  indiranagar: [12.9719, 77.6412],
+  "electronic city": [12.8456, 77.6603],
+  yeshwanthpur: [13.028, 77.54],
+  whitefield: [12.9698, 77.75],
+  "hsr layout": [12.9082, 77.6476],
+  marathahalli: [12.9569, 77.7011],
+  yelahanka: [13.1007, 77.5963],
+  hoskote: [13.0707, 77.7984],
+  bommanahalli: [12.8995, 77.622],
+  malleshwaram: [13.006, 77.57],
+  jayanagar: [12.925, 77.5938],
+  "kr puram": [13.0055, 77.7],
+  "k r puram": [13.0055, 77.7],
 };
+
+function getFallbackCoords(label: string | null | undefined) {
+  if (!label) return null;
+  const normalized = label
+    .toLowerCase()
+    .replace(/\b(bengaluru|bangalore|metro|karnataka|india)\b/g, "")
+    .replace(/,/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return locationCoordsFallback[normalized] ?? null;
+}
 
 function parseLocation(loc: unknown): { lat: number; lng: number } | null {
   if (!loc) return null;
@@ -42,19 +55,23 @@ function parseLocation(loc: unknown): { lat: number; lng: number } | null {
   // WKB hex format from PostGIS
   if (typeof loc === "string" && /^[0-9a-fA-F]+$/.test(loc) && loc.length >= 42) {
     try {
+      const littleEndian = loc.slice(0, 2) === "01";
       let offset = 2;
       const typeHex = loc.slice(offset, offset + 8);
       offset += 8;
-      const typeInt = parseInt(typeHex.match(/../g)!.reverse().join(""), 16);
+      const typeInt = parseInt(
+        littleEndian ? typeHex.match(/../g)!.reverse().join("") : typeHex,
+        16
+      );
       if (typeInt & 0x20000000) offset += 8;
       const xHex = loc.slice(offset, offset + 16);
       const yHex = loc.slice(offset + 16, offset + 32);
       const buf = new ArrayBuffer(8);
       const view = new DataView(buf);
       for (let i = 0; i < 8; i++) view.setUint8(i, parseInt(xHex.slice(i * 2, i * 2 + 2), 16));
-      const lng = view.getFloat64(0, true);
+      const lng = view.getFloat64(0, littleEndian);
       for (let i = 0; i < 8; i++) view.setUint8(i, parseInt(yHex.slice(i * 2, i * 2 + 2), 16));
-      const lat = view.getFloat64(0, true);
+      const lat = view.getFloat64(0, littleEndian);
       if (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
         return { lat, lng };
       }
@@ -89,7 +106,7 @@ export function RouteMap({ stops }: RouteMapProps) {
   const routeStops: RouteStop[] = [];
 
   for (const stop of stops) {
-    const caseData = stop.cases;
+    const caseData = Array.isArray(stop.cases) ? stop.cases[0] : stop.cases;
     if (!caseData) continue;
 
     const parsed = parseLocation(caseData.location);
@@ -103,7 +120,7 @@ export function RouteMap({ stops }: RouteMapProps) {
         status: stop.status,
       });
     } else {
-      const fallback = locationCoordsFallback[caseData.location_label ?? ""];
+      const fallback = getFallbackCoords(caseData.location_label);
       if (fallback) {
         routeStops.push({
           id: stop.id,
