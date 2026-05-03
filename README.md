@@ -21,16 +21,7 @@ Sahaya is an AI-assisted coordination platform for community aid operations. It 
 
 ## Architecture Flow
 
-```text
-intake (form/csv/email/messages)
-	-> geocode + normalize
-	-> triage agent (severity, vulnerability, confidence, freshness)
-	-> match agent (skills, language, distance, load)
-	-> dispatch agent (SLA rules, assignment/escalation)
-	-> volunteer execution
-	-> verification
-	-> case closure + audit + notes
-```
+![Sahaya system architecture diagram](public/sahaya-architecture.png)
 
 ## Product Areas (UI)
 
