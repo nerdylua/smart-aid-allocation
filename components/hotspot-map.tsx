@@ -108,7 +108,9 @@ export function HotspotMap({
   }
 
   return (
-    <div className={`border rounded-lg overflow-hidden ${heightClassName}`}>
+    <div
+      className={`relative z-0 isolate border rounded-lg overflow-hidden ${heightClassName}`}
+    >
       <MapInner cases={casesWithCoords} />
     </div>
   );
